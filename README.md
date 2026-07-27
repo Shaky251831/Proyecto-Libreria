@@ -1,11 +1,11 @@
 ## Nombre del proyecto 
 Sistema de Gestión para Librería en Línea: “Mundos de Tinta”.
 
-## Nombre de ambos integrantes del equipo:
+## Integrantes del equipo:
 
--Márquez Agustín Briseida.
+- Márquez Agustín Briseida.
 
--López Guerrero Ariel Betsabe.
+- López Guerrero Ariel Betsabe.
 
 ## Problemática:
 
