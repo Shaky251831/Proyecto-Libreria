@@ -1,0 +1,78 @@
+/* Color de fondo general idéntico al de tu frame en Figma */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #DAF28F; /* El tono verde exacto que usaste */
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Tarjeta del formulario */
+.auth-form {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-form h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333333;
+  font-size: 24px;
+}
+
+/* Agrupación de inputs */
+.input-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #444444;
+  font-size: 14px;
+}
+
+.input-group input {
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #4A7C59; /* Un tono verde de acento */
+}
+
+/* Estilo para los mensajes de error en tiempo real debajo de los inputs */
+.error-text {
+  color: #d9534f;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* Botón principal idéntico a tus botones de Figma */
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background-color: #4A7C59; /* El verde sólido de tus botones */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+  background-color: #3a6347;
+}
