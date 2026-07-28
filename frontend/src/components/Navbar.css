@@ -1,0 +1,85 @@
+/* Contenedor principal de la barra de navegación */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 15px 30px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-family: 'Poppins', sans-serif;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* Estilo del logotipo / marca */
+.navbar-brand a {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333333;
+  text-decoration: none;
+}
+
+/* Enlaces del menú central */
+.navbar-links {
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-links a {
+  color: #555555;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.navbar-links a:hover {
+  color: #4A7C59;
+}
+
+/* Sección de usuario a la derecha */
+.navbar-user .user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #333333;
+  font-size: 14px;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #777777;
+  background-color: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Botón de cerrar sesión */
+.logout-btn {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #c9302c;
+}
+
+/* Enlace de inicio de sesión si no hay usuario */
+.login-link {
+  color: #4A7C59;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
