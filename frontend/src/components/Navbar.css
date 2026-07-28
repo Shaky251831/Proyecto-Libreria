@@ -10,7 +10,7 @@
   border-bottom: 1px solid #eaeaea;
 }
 
-/* Estilo del logotipo / marca */
+/* Estilo del logotipo*/
 .navbar-brand a {
   font-size: 18px;
   font-weight: bold;
@@ -35,7 +35,7 @@
   color: #4A7C59;
 }
 
-/* Sección de usuario a la derecha */
+/* Sección de usuario derecha */
 .navbar-user .user-info {
   display: flex;
   align-items: center;

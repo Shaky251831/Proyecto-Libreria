@@ -47,7 +47,7 @@ export default function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Si no hay errores y los campos no están vacíos, puedes enviar a la API de Laravel
+   
     if (!errors.name && !errors.email && !errors.password && formData.name) {
       console.log('Datos listos para enviar:', formData);
       alert('¡Registro validado con éxito!');

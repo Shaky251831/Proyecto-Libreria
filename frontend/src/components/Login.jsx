@@ -41,7 +41,7 @@ export default function Login({ setUser }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!errors.email && !errors.password && formData.email && formData.password) {
-      // Simulamos el inicio de sesión exitoso
+      
       setUser({ name: 'Bris Márquez', role: 'admin' });
       alert('¡Bienvenida de nuevo!');
       navigate('/catalogo');
