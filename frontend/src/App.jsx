@@ -4,9 +4,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
+import Catalogo from './components/Catalogo';
+import Carrito from './components/Carrito';
+import Dashboard from './components/Dashboard';
 
-const CatalogoLibros = () => <div style={{padding: '20px'}}><h2>Catálogo de Libros (Público)</h2></div>;
-const DashboardAdmin = () => <div style={{padding: '20px'}}><h2>Panel de Administrador (Ruta Protegida)</h2></div>;
+
 
 export default function App() {
   const [user, setUser] = useState({
@@ -26,13 +28,13 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/catalogo" element={<CatalogoLibros />} />
-
+        <Route path="/catalogo" element={<Catalogo />} />                     
+        <Route path="/carrito" element={<Carrito />} />
         <Route 
           path="/admin/dashboard" 
           element={
             <ProtectedRoute allowedRoles={['admin']} userRole={user?.role}>
-              <DashboardAdmin />
+              <Dashboard/>
             </ProtectedRoute>
           } 
         />

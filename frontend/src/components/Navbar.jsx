@@ -10,6 +10,8 @@ export default function Navbar({ user, onLogout }) {
       
       <div className="navbar-links">
         <Link to="/catalogo">Catálogo</Link>
+        <Link to="/carrito">Carrito</Link> 
+        <Link to="/register">Registrarse</Link>
         {user?.role === 'admin' && (
           <Link to="/admin/dashboard">Panel Admin</Link>
         )}
