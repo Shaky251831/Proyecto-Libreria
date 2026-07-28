@@ -6,20 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('libros', function (Blueprint $table) {
             $table->id();
+            
+            // Llave foránea hacia la tabla categorias
+            $table->foreignId('categoria_id')->constrained('categorias')->onDelete('cascade');
+            
+            $table->string('titulo', 200);
+            $table->string('autor', 150);
+            $table->decimal('precio', 8, 2);
+            $table->integer('stock')->default(0);
+            $table->string('img_portada')->nullable();
+            $table->text('descripcion')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('libros');

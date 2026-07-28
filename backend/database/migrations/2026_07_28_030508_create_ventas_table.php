@@ -6,20 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
+            
+            // Llave foránea hacia la tabla usuarios
+            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
+            
+            $table->decimal('monto_total', 10, 2);
+            $table->string('metodo_pago', 50); // Agregado: ej. 'Efectivo', 'Tarjeta'
+            $table->enum('estado', ['pendiente', 'completada', 'cancelada'])->default('completada');
+            $table->dateTime('fecha_venta');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ventas');
