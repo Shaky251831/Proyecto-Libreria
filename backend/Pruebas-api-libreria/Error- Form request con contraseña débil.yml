@@ -1,10 +1,10 @@
 info:
-  name: Reguistar
+  name: "Error: Form request con contraseña débil"
   type: http
-  seq: 3
+  seq: 11
 
 http:
-  method: GET
+  method: POST
   url: ""
   auth: inherit
 

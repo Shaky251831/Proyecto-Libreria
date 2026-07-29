@@ -5,7 +5,14 @@ info:
 
 http:
   method: POST
-  url: http://167.99.158.178/api/login
+  url: http://127.0.0.1:8000/api/login
+  body:
+    type: json
+    data: |-
+      {
+        "email": "admin@libreria.com",
+        "password": "Admin123!"
+      }
   auth: inherit
 
 settings:

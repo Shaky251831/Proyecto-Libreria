@@ -1,0 +1,17 @@
+info:
+  name: Logout
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/logout
+  auth:
+    type: bearer
+    token: 1|CDdpjMSPBeMUecGE2J2sjbL717PzIGNZRSUGXqvWa3c48dfc
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,15 @@
+info:
+  name: "Error: permiso denegado por rol"
+  type: http
+  seq: 14
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/libros
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
