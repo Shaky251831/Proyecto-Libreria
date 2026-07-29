@@ -51,6 +51,24 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        DB::table('autores')->insert([
+            ['id' => 1, 'nombre' => 'J.R.R. Tolkien',      'nacionalidad' => 'Británica',      'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'nombre' => 'Patrick Rothfuss',    'nacionalidad' => 'Estadounidense', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'nombre' => 'Brandon Sanderson',   'nacionalidad' => 'Estadounidense', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 4, 'nombre' => 'Frank Herbert',       'nacionalidad' => 'Estadounidense', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 5, 'nombre' => 'Ray Bradbury',        'nacionalidad' => 'Estadounidense', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 6, 'nombre' => 'William Gibson',      'nacionalidad' => 'Estadounidense', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 7, 'nombre' => 'Gabriel García Márquez', 'nacionalidad' => 'Colombiana',  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 8, 'nombre' => 'Fiódor Dostoyevski',  'nacionalidad' => 'Rusa',           'created_at' => now(), 'updated_at' => now()],
+            ['id' => 9, 'nombre' => 'George Orwell',       'nacionalidad' => 'Británica',      'created_at' => now(), 'updated_at' => now()],
+            ['id' => 10, 'nombre' => 'Gege Akutami',       'nacionalidad' => 'Japonesa',       'created_at' => now(), 'updated_at' => now()],
+            ['id' => 11, 'nombre' => 'Muneyuki Kaneshiro', 'nacionalidad' => 'Japonesa',       'created_at' => now(), 'updated_at' => now()],
+            ['id' => 12, 'nombre' => 'Haruichi Furudate',  'nacionalidad' => 'Japonesa',       'created_at' => now(), 'updated_at' => now()],
+            ['id' => 13, 'nombre' => 'James Clear',        'nacionalidad' => 'Estadounidense', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 14, 'nombre' => 'Yuval Noah Harari',  'nacionalidad' => 'Israelí',        'created_at' => now(), 'updated_at' => now()],
+            ['id' => 15, 'nombre' => 'Robin Sharma',       'nacionalidad' => 'Canadiense',     'created_at' => now(), 'updated_at' => now()],
+        ]);
+
         // 3. CATEGORÍAS 
         DB::table('categorias')->insert([
             ['id' => 1, 'nombre' => 'Fantasía y Épica', 'descripcion' => 'Mundos mágicos, criaturas y grandes aventuras épicas.', 'created_at' => now(), 'updated_at' => now()],
@@ -219,6 +237,29 @@ class DatabaseSeeder extends Seeder
                 'descripcion' => 'Una fábula espiritual sobre cómo encontrar tu propósito y cultivar la paz mental.',
                 'created_at' => now(), 'updated_at' => now(),
             ],
+        ]);
+
+        DB::table('prestamos')->insert([
+            [
+                'id_usuario' => 3, // Cliente Frecuente
+                'id_libro' => 1,   // El Hobbit
+                'estado' => 'activo',
+                'fecha_inicial' => now()->subDays(5)->toDateString(),
+                'fecha_limite' => now()->addDays(9)->toDateString(),
+                'fecha_devolucion' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id_usuario' => 3, // Cliente Frecuente
+                'id_libro' => 10,  // Jujutsu Kaisen
+                'estado' => 'devuelto',
+                'fecha_inicial' => now()->subDays(20)->toDateString(),
+                'fecha_limite' => now()->subDays(6)->toDateString(),
+                'fecha_devolucion' => now()->subDays(7)->toDateString(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
 
         }
