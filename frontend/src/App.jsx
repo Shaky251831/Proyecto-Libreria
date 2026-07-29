@@ -19,6 +19,8 @@ function MainContent({ user, setUser }) {
   const hideNavbar = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/register';
   
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
     navigate('/');
   };
@@ -52,9 +54,9 @@ function MainContent({ user, setUser }) {
 }
 
 export default function App() {
-  const [user, setUser] = useState({
-    name: 'Bris Márquez',
-    role: 'admin' 
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
   return (

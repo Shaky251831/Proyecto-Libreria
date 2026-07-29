@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import './Auth.css';
 
-export default function Register() {
+export default function Register({ setUser }) {
   const [formData, setFormData] = useState({
-    name: '',
+    nombre: '',
     email: '',
+    telefono: '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    rol_id:3
   });
 
   const [errors, setErrors] = useState({});
@@ -21,16 +24,18 @@ export default function Register() {
     });
     setErrors({
       ...errors,
-      [e.target.name]: ''
+      [e.target.name]: '',
+      apiError: ''
     });
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setErrors({});
     let newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'El nombre es obligatorio.';
+    if (!formData.nombre?.trim()) {
+      newErrors.nombre = 'El nombre es obligatorio.';
     }
     if (!formData.email.includes('@')) {
       newErrors.email = 'Introduce un correo válido.';
@@ -49,11 +54,37 @@ export default function Register() {
 
     setLoading(true); 
 
-    // Simulamos tiempo de respuesta del servidor (Laravel)
-    setTimeout(() => {
+    try {
+      // 1. Petición real POST a Laravel (/api/register)
+      const response = await api.post('/register', formData);
+      const { access_token, user } = response.data;
+
+      // 2. Guardar Token y Usuario en localStorage
+      localStorage.setItem('token', access_token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      if (setUser) {
+        setUser(user);
+      }
+
+      alert('¡Cuenta registrada exitosamente!');
+      navigate('/catalogo');
+
+    } catch (error) {
+      // Manejar errores devueltos por la API (HTTP 422: contraseña no válida o correo ya registrado)
+      if (error.response && error.response.status === 422) {
+        setErrors(error.response.data.errors || {});
+      } else {
+        setErrors({ apiError: 'No se pudo conectar con el servidor backend.' });
+      }
+    } finally {
       setLoading(false); 
-      navigate('/login');
-    }, 1500);
+    }
+  };
+  const renderError = (field) => {
+    if (!errors[field]) return null;
+    const msg = Array.isArray(errors[field]) ? errors[field][0] : errors[field];
+    return <span className="error-message">{msg}</span>;
   };
 
   return (
@@ -65,14 +96,14 @@ export default function Register() {
         <div className="input-group">
           <input 
             type="text" 
-            name="name"
-            value={formData.name}
+            name="nombre"
+            value={formData.nombre}
             onChange={handleChange}
             placeholder="Nombre Completo" 
-            className={errors.name ? 'input-error' : ''}
+            className={errors.nombre ? 'input-error' : ''}
             disabled={loading}
           />
-          {errors.name && <span className="error-message">{errors.name}</span>}
+          {errors.nombre && <span className="error-message">{errors.nombre}</span>}
         </div>
 
         <div className="input-group">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 import './Auth.css';
 
 export default function Login({ setUser }) {
@@ -9,7 +10,7 @@ export default function Login({ setUser }) {
   const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     let newErrors = {};
 
@@ -27,20 +28,43 @@ export default function Login({ setUser }) {
 
     setLoading(true); 
 
-    // Simular un retraso de red de 1.5 segundos, después irá la petición Axios.
-    setTimeout(() => {
-      setLoading(false); 
+    try {
+      // 1. Petición real POST a Laravel (/api/login)
+      const response = await api.post('/login', { email, password });
+      
+      const { access_token, user } = response.data;
 
-      if (email === 'admin@admin.com') {
-        setUser({ name: 'Bris Márquez', role: 'admin' });
+      // 2. Guardar Token y Usuario en localStorage
+      localStorage.setItem('token', access_token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // 3. Actualizar el estado global de React si lo están utilizando
+      if (setUser) {
+        setUser(user);
+      }
+      // 4. Redirección por Rol segun la API
+      // (rol_id = 1 es Administrador)
+      if (user.rol_id === 1) {
         navigate('/admin/dashboard');
       } else {
-        setUser({ name: 'Usuario', role: 'client' });
         navigate('/catalogo');
       }
-    }, 1500);
-  };
 
+    } catch (error) {
+      // Si la API devuelve credenciales incorrectas (HTTP 401 o 422)
+      if (error.response && error.response.data) {
+        setErrors({
+          apiError: error.response.data.message || 'Credenciales incorrectas.'
+        });
+      } else {
+        setErrors({
+          apiError: 'No se pudo conectar con el servidor backend.'
+        });
+      }
+    } finally {
+      setLoading(false); 
+    }
+  };
   return (
     <div className="auth-container">
       <form onSubmit={handleLogin} className="auth-form">
