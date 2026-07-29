@@ -1,103 +1,71 @@
 import React, { useState } from 'react';
-import './Auth.css'; // O tus estilos correspondientes
+import { Link, useNavigate } from 'react-router-dom';
+import './Auth.css';
 
 export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    password_confirmation: ''
   });
+  const navigate = useNavigate();
 
-  const [errors, setErrors] = useState({});
-
-  // Validación en tiempo real conforme el usuario escribe
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-
-    // Validaciones específicas por campo
-    if (name === 'name') {
-      if (value.trim() === '') {
-        setErrors((prev) => ({ ...prev, name: 'El nombre es obligatorio.' }));
-      } else {
-        setErrors((prev) => ({ ...prev, name: '' }));
-      }
-    }
-
-    if (name === 'email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        setErrors((prev) => ({ ...prev, email: 'Ingresa un correo electrónico válido.' }));
-      } else {
-        setErrors((prev) => ({ ...prev, email: '' }));
-      }
-    }
-
-    if (name === 'password') {
-      if (value.length < 6) {
-        setErrors((prev) => ({ ...prev, password: 'La contraseña debe tener al menos 6 caracteres.' }));
-      } else {
-        setErrors((prev) => ({ ...prev, password: '' }));
-      }
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
-   
-    if (!errors.name && !errors.email && !errors.password && formData.name) {
-      console.log('Datos listos para enviar:', formData);
-      alert('¡Registro validado con éxito!');
-    } else {
-      alert('Por favor, corrige los errores antes de continuar.');
-    }
+    // Betsa aquí conectas con la API de Laravel para el registro
+    alert('¡Cuenta creada con éxito!');
+    navigate('/login');
   };
 
   return (
     <div className="auth-container">
-      <form onSubmit={handleSubmit} className="auth-form">
-        <h2>Registro - Mundos de Tinta</h2>
+      <form onSubmit={handleRegister} className="auth-form">
         
+        <h2 style={{ textAlign: 'center', color: '#2C3E50', marginBottom: '20px' }}>Crear Cuenta</h2>
+
         <div className="input-group">
-          <label>Nombre completo</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Tu nombre"
+          <input 
+            type="text" 
+            placeholder="Nombre Completo" 
+            required 
           />
-          {errors.name && <span className="error-text">{errors.name}</span>}
         </div>
 
         <div className="input-group">
-          <label>Correo electrónico</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="correo@ejemplo.com"
+          <input 
+            type="email" 
+            placeholder="Correo Electrónico" 
+            required 
           />
-          {errors.email && <span className="error-text">{errors.email}</span>}
+          <span className="error-text">*Introduce un correo válido</span>
         </div>
 
         <div className="input-group">
-          <label>Contraseña</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Mínimo 6 caracteres"
+          <input 
+            type="password" 
+            placeholder="Contraseña" 
+            required 
           />
-          {errors.password && <span className="error-text">{errors.password}</span>}
+          <span className="error-text">*La contraseña debe tener al menos 8 caracteres</span>
         </div>
 
-        <button type="submit" className="btn-submit">Registrarse</button>
+        <div className="input-group">
+          <input 
+            type="password" 
+            placeholder="Confirmar contraseña" 
+            required 
+          />
+        </div>
+
+        <button type="submit" className="btn-submit">
+          Registrarse
+        </button>
+
+        <div className="auth-links">
+          ¿Ya tienes una cuenta? <Link to="/login">Iniciar Sesión</Link>
+        </div>
+
       </form>
     </div>
   );

@@ -1,85 +1,73 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
-
 export default function Login({ setUser }) {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-
-  const [errors, setErrors] = useState({});
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  // Validación en tiempo real
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-
-    if (name === 'email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        setErrors((prev) => ({ ...prev, email: 'Ingresa un correo electrónico válido.' }));
-      } else {
-        setErrors((prev) => ({ ...prev, email: '' }));
-      }
-    }
-
-    if (name === 'password') {
-      if (value.trim() === '') {
-        setErrors((prev) => ({ ...prev, password: 'La contraseña es obligatoria.' }));
-      } else {
-        setErrors((prev) => ({ ...prev, password: '' }));
-      }
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    if (!errors.email && !errors.password && formData.email && formData.password) {
-      
+    // Simulación de inicio de sesión, Betsa: ajusta con tu lógica con Laravel.
+    if (email === 'admin@admin.com') {
       setUser({ name: 'Bris Márquez', role: 'admin' });
-      alert('¡Bienvenida de nuevo!');
-      navigate('/catalogo');
+      navigate('/admin/dashboard');
     } else {
-      alert('Por favor, corrige los errores antes de continuar.');
+      setUser({ name: 'Usuario', role: 'client' });
+      navigate('/catalogo');
     }
   };
 
   return (
     <div className="auth-container">
-      <form onSubmit={handleSubmit} className="auth-form">
-        <h2>Iniciar Sesión - Mundos de Tinta</h2>
+      <form onSubmit={handleLogin} className="auth-form">
         
-        <div className="input-group">
-          <label>Correo electrónico</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="correo@ejemplo.com"
-          />
-          {errors.email && <span className="error-text">{errors.email}</span>}
+        {/* Título */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <h2 style={{ color: '#2C3E50', fontSize: '22px', margin: '10px 0 0 0' }}>Mundos de Tinta</h2>
+          <span style={{ fontSize: '11px', color: '#555', letterSpacing: '2px' }}>LIBRERÍA</span>
         </div>
 
         <div className="input-group">
-          <label>Contraseña</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Tu contraseña"
+          <input 
+            type="text" 
+            placeholder="Correo o usuario" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required 
           />
-          {errors.password && <span className="error-text">{errors.password}</span>}
         </div>
 
-        <button type="submit" className="btn-submit">Entrar</button>
+        <div className="input-group">
+          <input 
+            type="password" 
+            placeholder="Contraseña" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required 
+          />
+          <div style={{ textAlign: 'right', marginTop: '4px' }}>
+            <a href="#" style={{ fontSize: '11px', color: '#d9534f', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
+          </div>
+          
+          {/* Requisitos de contraseña*/}
+          <div className="error-text" style={{ fontSize: '10px', lineHeight: '1.3', marginTop: '6px' }}>
+            • Debe tener al menos 8 caracteres.<br />
+            • Una mayúscula.<br />
+            • Un número.<br />
+            • Un carácter especial.
+          </div>
+        </div>
+
+        <button type="submit" className="btn-submit">
+          Entrar
+        </button>
+
+        <div className="auth-links">
+          ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
+        </div>
+
       </form>
     </div>
   );

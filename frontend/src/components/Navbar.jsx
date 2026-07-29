@@ -5,13 +5,13 @@ export default function Navbar({ user, onLogout }) {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/catalogo">📚 Mundos de Tinta</Link>
+        <Link to="/">📚 Mundos de Tinta</Link>
       </div>
       
       <div className="navbar-links">
+        <Link to= "/">Inicio</Link>
         <Link to="/catalogo">Catálogo</Link>
         <Link to="/carrito">Carrito</Link> 
-        <Link to="/register">Registrarse</Link>
         {user?.role === 'admin' && (
           <Link to="/admin/dashboard">Panel Admin</Link>
         )}
