@@ -5,7 +5,16 @@ info:
 
 http:
   method: POST
-  url: ""
+  url: http://127.0.0.1:8000/api/register
+  body:
+    type: json
+    data: |-
+      {
+        "nombre": "Prueba Error",
+        "email": "error@libreria.com",
+        "password": "123",
+        "password_confirmation": "123"
+      }
   auth: inherit
 
 settings:

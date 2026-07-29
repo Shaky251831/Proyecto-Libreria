@@ -5,8 +5,17 @@ info:
 
 http:
   method: PUT
-  url: ""
-  auth: inherit
+  url: http://127.0.0.1:8000/api/libros/1
+  body:
+    type: json
+    data: |-
+      {
+        "precio": 380.00,
+        "stock": 18
+      }
+  auth:
+    type: bearer
+    token: 1|CDdpjMSPBeMUecGE2J2sjbL717PzIGNZRSUGXqvWa3c48dfc
 
 settings:
   encodeUrl: true

@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/user
+  url: http://127.0.0.1:8000/api/profile
   auth:
     type: bearer
-    token: 1|CDdpjMSPBeMUecGE2J2sjbL717PzIGNZRSUGXqvWa3c48dfc
+    token: 3|8AWVa1ejzJQMkDjRVXxJHfh0lpIIzFS6znksfHMT5c08b5ce
 
 settings:
   encodeUrl: true

@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: ""
+  url: http://127.0.0.1:8000/api/libros?buscar=Hobbit
+  params:
+    - name: buscar
+      value: Hobbit
+      type: query
   auth: inherit
 
 settings:

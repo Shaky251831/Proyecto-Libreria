@@ -6,7 +6,19 @@ info:
 http:
   method: POST
   url: http://127.0.0.1:8000/api/libros
-  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "categoria_id": 1,
+        "titulo": "Libro de Prueba Cliente",
+        "autor": "Desconocido",
+        "precio": 100.00,
+        "stock": 5
+      }
+  auth:
+    type: bearer
+    token: 2|VwbNAxV53ObbMrvNzFSl2TQs5vhDro4eJgi5w27f5d41398a
 
 settings:
   encodeUrl: true

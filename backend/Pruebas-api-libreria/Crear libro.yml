@@ -4,9 +4,23 @@ info:
   seq: 7
 
 http:
-  method: GET
-  url: ""
-  auth: inherit
+  method: POST
+  url: http://127.0.0.1:8000/api/libros
+  body:
+    type: json
+    data: |-
+      {
+        "categoria_id": 1,
+        "titulo": "El Señor de los Anillos: La Comunidad del Anillo",
+        "autor": "J.R.R. Tolkien",
+        "precio": 450.00,
+        "stock": 20,
+        "img_portada": "https://ejemplo.com/portada.jpg",
+        "descripcion": "Edición especial ilustrada"
+      }
+  auth:
+    type: bearer
+    token: 3|8AWVa1ejzJQMkDjRVXxJHfh0lpIIzFS6znksfHMT5c08b5ce
 
 settings:
   encodeUrl: true
