@@ -34,6 +34,15 @@ export default function Login({ setUser }) {
       
       const { access_token, user } = response.data;
 
+      const roleId = user.rol_id || user.rol || user.role;
+
+  // Guardar en el objeto del usuario
+      const usuarioGuardado = {
+        ...user,
+        rol_id: roleId,
+        role: roleId === 1 || roleId === 'admin' ? 'admin' : 'client'
+      };
+
       // 2. Guardar Token y Usuario en localStorage
       localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
@@ -44,7 +53,7 @@ export default function Login({ setUser }) {
       }
       // 4. Redirección por Rol segun la API
       // (rol_id = 1 es Administrador)
-      if (user.rol_id === 1) {
+      if (user.rol_id === 1 || user.role === 'admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/catalogo');

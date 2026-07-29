@@ -41,7 +41,7 @@ function MainContent({ user, setUser }) {
         <Route 
           path="/admin/dashboard" 
           element={
-            <ProtectedRoute allowedRoles={['admin']} userRole={user?.role}>
+            <ProtectedRoute allowedRoles={[1,'admin']} userRole={user?.rol_id || user?.role}>
               <Dashboard/>
             </ProtectedRoute>
           } 
