@@ -182,3 +182,17 @@
     border-right-color: var(--border);
   }
 }
+/* Para los mensajes de error debajo de los inputs */
+.error-message {
+  color: #d9534f; /* Color rojo para los avisos */
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  text-align: left;
+  display: block;
+}
+
+/* Borde rojo en el input cuando detecte un error */
+.input-error {
+  border: 1px solid #d9534f !important;
+}

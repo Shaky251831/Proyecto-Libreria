@@ -1,28 +1,31 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 export default function Carrito() {
-  // Estado inicial de ejemplo con algunos productos en el carrito
+  const navigate = useNavigate();
+
+  // Estado inicial ejemplo con algunos productos en el carrito
   const [cartItems, setCartItems] = useState([
     { id: 1, title: 'Cien años de soledad', price: 299, quantity: 1 },
     { id: 2, title: 'El Principito', price: 150, quantity: 2 }
   ]);
 
-  // Función para aumentar la cantidad
+  // Para aumentar la cantidad
   const increaseQty = (id) => {
     setCartItems(cartItems.map(item => 
       item.id === id ? { ...item, quantity: item.quantity + 1 } : item
     ));
   };
 
-  // Función para disminuir o eliminar
+  // Para disminuir
   const decreaseQty = (id) => {
     setCartItems(cartItems.map(item => 
       item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
     ));
   };
 
-  // Función para eliminar un producto del carrito
+  // Eliminar un producto del carrito
   const removeItem = (id) => {
     setCartItems(cartItems.filter(item => item.id !== id));
   };
@@ -61,7 +64,7 @@ export default function Carrito() {
             <h3>Total a pagar: ${total} MXN</h3>
             <button 
               style={{ background: '#3a6347', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', fontSize: '16px', cursor: 'pointer', marginTop: '10px' }}
-              onClick={() => alert('¡Pedido realizado con éxito!')}
+              onClick={() => navigate('/confirmar-pedido')}
             >
               Confirmar Pedido
             </button>
