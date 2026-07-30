@@ -24,17 +24,27 @@ export default function Navbar({ user, onLogout }) {
 
         {/* Enlaces exclusivos para ADMINISTRADOR */}
         {esAdmin && (
-          <Link to="/admin/dashboard">Panel Admin</Link>
+          <>
+            <Link to="/admin/dashboard">Panel Admin</Link>
+            <Link to="/admin/categorias">Categorías</Link>
+            <Link to="/admin/prestamos">Préstamos</Link>
+          </>
         )}
 
         {/* Enlaces exclusivos para EMPLEADO */}
         {esEmpleado && (
-          <Link to="/empleado/panel">Panel Empleado</Link>
+          <>
+            <Link to="/empleado/panel">Panel Empleado</Link>
+            <Link to="/admin/prestamos">Préstamos</Link>
+          </>
         )}
 
         {/* Enlaces exclusivos para CLIENTE */}
         {esCliente && (
-          <Link to="/historial">Mis Compras</Link>
+            <>
+           <Link to="/historial">Mis Compras</Link>
+           <Link to="/mis-prestamos">Mis Préstamos</Link>
+          </>
         )}
       </div>
 
