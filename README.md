@@ -27,21 +27,93 @@ La librería física actual sufre de descontrol en su inventario de libros, pér
 ## Tecnologías utilizadas
  
 **Backend**
+
 - PHP 8.3
 - Laravel 13
 - Laravel Sanctum (autenticación por tokens Bearer)
 - MySQL
+  
 **Frontend**
+
 - React 19
 - Vite 8
 - React Router DOM 7
 - Axios
+
 **Herramientas**
+
 - Composer (gestor de dependencias PHP)
 - npm (gestor de dependencias JS)
 - GitHub / GitHub Projects (control de versiones y gestión de tareas)
 - Figma (prototipo de diseño)
 
+## Instrucciones de instalación
+ 
+### Requisitos previos
+ 
+- PHP >= 8.3 y Composer
+- Node.js >= 18 y npm
+- MySQL en ejecución
+### 1. Clonar el repositorio
+ 
+```bash
+git clone https://github.com/Shaky251831/Proyecto-Libreria.git
+cd Proyecto-Libreria
+```
+ 
+### 2. Backend (Laravel)
+ 
+```bash
+cd backend
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+ 
+Editar el archivo `.env` y configurar la conexión a base de datos (por defecto el proyecto usa el puerto `3307`, pero puede que se el puerto ´3306´):
+ 
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=libreria_mundos_de_tinta
+DB_USERNAME=root
+DB_PASSWORD=
+```
+ 
+Crea la base de datos `libreria_mundos_de_tinta` en el gestor MySQL y luego correr las migraciones junto con el seeder (que carga roles, usuarios de prueba, autores, categorías, libros, préstamos y ventas de ejemplo):
+ 
+```bash
+php artisan migrate --seed
+```
+ 
+Levantar el servidor de desarrollo:
+ 
+```bash
+php artisan serve
+```
+ 
+La API queda disponible en `http://127.0.0.1:8000`.
+ 
+### 3. Frontend (React + Vite)
+ 
+En otra terminal:
+ 
+```bash
+cd frontend
+npm install
+npm run dev
+```
+## Credenciales de prueba
+ 
+Estos usuarios se crean automáticamente al correr `php artisan migrate --seed`:
+ 
+| Rol | Email | Contraseña |
+|---|---|---|
+| Administrador | `admin@libreria.com` | `Admin123!` |
+| Empleado | `vendedor@libreria.com` | `Admin123!` |
+| Cliente (demostración) | `cliente@libreria.com` | `Admin123!` |
+| Cliente (frecuente) | `cliente2@libreria.com` | `Admin123!` |
 
 ## Link al repositorio de GitHub (debe estar ya creado y ser público)
 - https://github.com/Shaky251831/Proyecto-Libreria 
