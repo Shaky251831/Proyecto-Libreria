@@ -14,7 +14,7 @@ export default function Catalogo() {
 
   // Cargar libros desde la API de Laravel
   useEffect(() => {
-    axios.get('http://localhost:8000/api/libros')
+    axios.get('https://mundosdetinta.duckdns.org/api/libros')
       .then((response) => {
         // Maneja la respuesta tanto si viene en .data o .data.data
         const data = Array.isArray(response.data) ? response.data : (response.data.data || []);

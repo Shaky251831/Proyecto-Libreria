@@ -22,7 +22,7 @@ export default function Dashboard() {
 
   const fetchBooks = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/libros', {
+      const response = await fetch('https://mundosdetinta.duckdns.org/api/libros', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -45,7 +45,7 @@ export default function Dashboard() {
     if (!window.confirm('¿Estás seguro de que deseas eliminar este libro?')) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/libros/${id}`, {
+      const response = await fetch(`https://mundosdetinta.duckdns.org/api/libros/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -70,7 +70,7 @@ export default function Dashboard() {
     if (!nuevoLibro.title || !nuevoLibro.author || !nuevoLibro.price) return;
 
     try {
-      const response = await fetch('http://localhost:8000/api/libros', {
+      const response = await fetch('https://mundosdetinta.duckdns.org/api/libros', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

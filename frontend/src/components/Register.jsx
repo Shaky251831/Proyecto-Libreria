@@ -4,6 +4,17 @@ import { Eye, EyeOff } from 'lucide-react';
 import api from '../api/axios';
 import './Auth.css';
 
+function getErrorMessage(err) {
+  const data = err?.response?.data;
+  if (!data) return "Ocurrió un error inesperado. Intenta de nuevo.";
+  if (data.message && !data.errors) return data.message;
+  if (data.errors) {
+    const primerCampo = Object.values(data.errors)[0];
+    return Array.isArray(primerCampo) ? primerCampo[0] : String(primerCampo);
+  }
+  return "Ocurrió un error inesperado.";
+}
+
 export default function Register({ setUser }) {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -84,14 +95,19 @@ export default function Register({ setUser }) {
       navigate('/catalogo');
 
     } catch (error) {
-      if (error.response && error.response.status === 422) {
-        setErrors(error.response.data.errors || {});
-      } else {
-        setErrors({ apiError: 'No se pudo conectar con el servidor backend.' });
-      }
-    } finally {
-      setLoading(false); 
-    }
+  if (error.response && error.response.status === 422) {
+    const rawErrors = error.response.data.errors || {};
+    const normalized = {};
+    Object.keys(rawErrors).forEach((campo) => {
+      normalized[campo] = Array.isArray(rawErrors[campo]) ? rawErrors[campo][0] : rawErrors[campo];
+    });
+    setErrors(normalized);
+  } else {
+    setErrors({ apiError: 'No se pudo conectar con el servidor backend.' });
+  }
+} finally {
+  setLoading(false); 
+}
   };
 
   return (
