@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\CategoriaController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
+// Recuperación de contraseña
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
 // Ver el catálogo completo (con paginación y filtros)
 Route::get('/libros', [LibroController::class, 'index']);
 // Ver detalle de un libro en específico
@@ -28,12 +32,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Crear, Editar y Eliminar Libros
-    Route::post('/libros', [LibroController::class, 'store']);
-    Route::put('/libros/{libro}', [LibroController::class, 'update']);
-    Route::delete('/libros/{libro}', [LibroController::class, 'destroy']);
+    Route::middleware('role:Administrador,Empleado')->group(function () {
+        Route::post('/libros', [LibroController::class, 'store']);
+        Route::put('/libros/{libro}', [LibroController::class, 'update']);
+
+        Route::post('/categorias', [CategoriaController::class, 'store']);
+        Route::put('/categorias/{categoria}', [CategoriaController::class, 'update']);
+    });
 
     // Crear, Editar y Eliminar Categorías
-    Route::post('/categorias', [CategoriaController::class, 'store']);
-    Route::put('/categorias/{categoria}', [CategoriaController::class, 'update']);
-    Route::delete('/categorias/{categoria}', [CategoriaController::class, 'destroy']);
+     Route::middleware('role:Administrador')->group(function () {
+        Route::delete('/libros/{libro}', [LibroController::class, 'destroy']);
+        Route::delete('/categorias/{categoria}', [CategoriaController::class, 'destroy']);
+        Route::put('/categorias/{categoria}', [CategoriaController::class, 'update']);
+    });
 });

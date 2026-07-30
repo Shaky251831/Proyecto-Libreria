@@ -19,7 +19,7 @@ class CheckRole
         }
 
         // Cargar la relación del rol si no está cargada
-        $userRole = $request->user()->rol->nombre;
+        $userRole = $request->user()->rol->nombre ?? null;
 
         // Verificar si el rol del usuario está dentro de los roles permitidos
         if (!in_array($userRole, $roles)) {

@@ -49,6 +49,15 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'rol_id' => 3,
+                'nombre' => 'Cliente Frecuente',
+                'email' => 'cliente2@libreria.com',
+                'password' => $passwordGenerica,
+                'telefono' => '9514444444',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         DB::table('autores')->insert([
@@ -240,26 +249,45 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('prestamos')->insert([
-            [
-                'id_usuario' => 3, // Cliente Frecuente
-                'id_libro' => 1,   // El Hobbit
-                'estado' => 'activo',
-                'fecha_inicial' => now()->subDays(5)->toDateString(),
-                'fecha_limite' => now()->addDays(9)->toDateString(),
-                'fecha_devolucion' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id_usuario' => 3, // Cliente Frecuente
-                'id_libro' => 10,  // Jujutsu Kaisen
-                'estado' => 'devuelto',
-                'fecha_inicial' => now()->subDays(20)->toDateString(),
-                'fecha_limite' => now()->subDays(6)->toDateString(),
-                'fecha_devolucion' => now()->subDays(7)->toDateString(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+            ['usuario_id' => 3, 'libro_id' => 1,  'estado' => 'activo',   'fecha_inicial' => now()->subDays(5)->toDateString(),  'fecha_limite' => now()->addDays(9)->toDateString(),  'fecha_devolucion' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 3, 'libro_id' => 10, 'estado' => 'devuelto', 'fecha_inicial' => now()->subDays(20)->toDateString(), 'fecha_limite' => now()->subDays(6)->toDateString(), 'fecha_devolucion' => now()->subDays(7)->toDateString(), 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 3, 'libro_id' => 3,  'estado' => 'activo',   'fecha_inicial' => now()->subDays(2)->toDateString(),  'fecha_limite' => now()->addDays(12)->toDateString(), 'fecha_devolucion' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 4, 'libro_id' => 5,  'estado' => 'atrasado', 'fecha_inicial' => now()->subDays(25)->toDateString(), 'fecha_limite' => now()->subDays(11)->toDateString(), 'fecha_devolucion' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 4, 'libro_id' => 7,  'estado' => 'devuelto', 'fecha_inicial' => now()->subDays(30)->toDateString(), 'fecha_limite' => now()->subDays(16)->toDateString(), 'fecha_devolucion' => now()->subDays(18)->toDateString(), 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 3, 'libro_id' => 8,  'estado' => 'activo',   'fecha_inicial' => now()->subDays(1)->toDateString(),  'fecha_limite' => now()->addDays(13)->toDateString(), 'fecha_devolucion' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 4, 'libro_id' => 12, 'estado' => 'devuelto', 'fecha_inicial' => now()->subDays(40)->toDateString(), 'fecha_limite' => now()->subDays(26)->toDateString(), 'fecha_devolucion' => now()->subDays(28)->toDateString(), 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 3, 'libro_id' => 14, 'estado' => 'activo',   'fecha_inicial' => now()->subDays(3)->toDateString(),  'fecha_limite' => now()->addDays(11)->toDateString(), 'fecha_devolucion' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 4, 'libro_id' => 2,  'estado' => 'atrasado', 'fecha_inicial' => now()->subDays(22)->toDateString(), 'fecha_limite' => now()->subDays(8)->toDateString(),  'fecha_devolucion' => null, 'created_at' => now(), 'updated_at' => now()],
+            ['usuario_id' => 3, 'libro_id' => 9,  'estado' => 'devuelto', 'fecha_inicial' => now()->subDays(15)->toDateString(), 'fecha_limite' => now()->subDays(1)->toDateString(),  'fecha_devolucion' => now()->subDays(2)->toDateString(), 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        
+        DB::table('ventas')->insert([
+            ['id' => 1,  'usuario_id' => 3, 'monto_total' => 640.00, 'metodo_pago' => 'Tarjeta',  'estado' => 'completada', 'fecha_venta' => now()->subDays(12), 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2,  'usuario_id' => 4, 'monto_total' => 320.00, 'metodo_pago' => 'Efectivo', 'estado' => 'completada', 'fecha_venta' => now()->subDays(10), 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3,  'usuario_id' => 3, 'monto_total' => 570.00, 'metodo_pago' => 'Tarjeta',  'estado' => 'completada', 'fecha_venta' => now()->subDays(8),  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 4,  'usuario_id' => 4, 'monto_total' => 190.00, 'metodo_pago' => 'Tarjeta',  'estado' => 'pendiente',  'fecha_venta' => now()->subDays(6),  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 5,  'usuario_id' => 3, 'monto_total' => 380.00, 'metodo_pago' => 'Efectivo', 'estado' => 'completada', 'fecha_venta' => now()->subDays(5),  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 6,  'usuario_id' => 4, 'monto_total' => 260.00, 'metodo_pago' => 'Tarjeta',  'estado' => 'cancelada',  'fecha_venta' => now()->subDays(4),  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 7,  'usuario_id' => 3, 'monto_total' => 410.00, 'metodo_pago' => 'Tarjeta',  'estado' => 'completada', 'fecha_venta' => now()->subDays(3),  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 8,  'usuario_id' => 4, 'monto_total' => 505.00, 'metodo_pago' => 'Efectivo', 'estado' => 'completada', 'fecha_venta' => now()->subDays(2),  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 9,  'usuario_id' => 3, 'monto_total' => 270.00, 'metodo_pago' => 'Tarjeta',  'estado' => 'completada', 'fecha_venta' => now()->subDays(1),  'created_at' => now(), 'updated_at' => now()],
+            ['id' => 10, 'usuario_id' => 4, 'monto_total' => 180.00, 'metodo_pago' => 'Tarjeta',  'estado' => 'pendiente',  'fecha_venta' => now(),              'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('detalle_ventas')->insert([
+            ['venta_id' => 1,  'libro_id' => 1,  'cantidad' => 2, 'precio_unitario' => 320.00, 'subtotal' => 640.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 2,  'libro_id' => 3,  'cantidad' => 1, 'precio_unitario' => 320.00, 'subtotal' => 320.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 3,  'libro_id' => 7,  'cantidad' => 1, 'precio_unitario' => 260.00, 'subtotal' => 260.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 3,  'libro_id' => 9,  'cantidad' => 1, 'precio_unitario' => 190.00, 'subtotal' => 190.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 3,  'libro_id' => 4,  'cantidad' => 1, 'precio_unitario' => 120.00, 'subtotal' => 120.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 4,  'libro_id' => 9,  'cantidad' => 1, 'precio_unitario' => 190.00, 'subtotal' => 190.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 5,  'libro_id' => 13, 'cantidad' => 1, 'precio_unitario' => 380.00, 'subtotal' => 380.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 6,  'libro_id' => 7,  'cantidad' => 1, 'precio_unitario' => 260.00, 'subtotal' => 260.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 7,  'libro_id' => 14, 'cantidad' => 1, 'precio_unitario' => 410.00, 'subtotal' => 410.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 8,  'libro_id' => 1,  'cantidad' => 1, 'precio_unitario' => 320.00, 'subtotal' => 320.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 8,  'libro_id' => 10, 'cantidad' => 1, 'precio_unitario' => 185.00, 'subtotal' => 185.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 9,  'libro_id' => 15, 'cantidad' => 1, 'precio_unitario' => 270.00, 'subtotal' => 270.00, 'created_at' => now(), 'updated_at' => now()],
+            ['venta_id' => 10, 'libro_id' => 11, 'cantidad' => 1, 'precio_unitario' => 180.00, 'subtotal' => 180.00, 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         }

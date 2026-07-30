@@ -14,6 +14,7 @@ class UsuarioResource extends JsonResource
             'nombre'   => $this->nombre,
             'email'    => $this->email,
             'telefono' => $this->telefono,
+            'rol_id'   => $this->rol_id,
             'rol'      => [
                 'id'     => $this->rol->id ?? null,
                 'nombre' => $this->rol->nombre ?? null,
