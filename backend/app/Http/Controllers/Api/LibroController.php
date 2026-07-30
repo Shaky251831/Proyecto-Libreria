@@ -13,25 +13,7 @@ class LibroController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Libro::with('categoria');
-
-        // Filtro de búsqueda por título o autor (ej. ?buscar=Hobbit)
-        if ($request->has('buscar') && !empty($request->buscar)) {
-            $busqueda = $request->buscar;
-            $query->where(function($q) use ($busqueda) {
-                $q->where('titulo', 'like', '%' . $busqueda . '%')
-                  ->orWhere('autor', 'like', '%' . $busqueda . '%');
-            });
-        }
-
-        // Filtro por categoría 
-        if ($request->has('categoria_id') && !empty($request->categoria_id)) {
-            $query->where('categoria_id', $request->categoria_id);
-        }
-
-        // Paginación server-side 
-        $perPage = $request->get('per_page', 10);
-        $libros = $query->paginate($perPage);
+        $libros = Libro::with('categoria')->latest()->get();
 
         return response()->json($libros, 200);
     }

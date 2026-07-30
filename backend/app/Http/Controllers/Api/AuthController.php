@@ -9,6 +9,7 @@ use App\Http\Requests\Api\RegisterRequest;
 use App\Http\Requests\Api\ResetPasswordRequest;
 use App\Http\Resources\UsuarioResource;
 use App\Models\User;
+use App\Services\NotificacionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Password;
 class AuthController extends Controller
 {
     // Registro de nuevos usuarios (Rol Cliente por defecto)
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request, NotificacionService $notificador)
     {
         $usuario = User::create([
             'rol_id'   => 3, // Cliente
@@ -25,6 +26,24 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'telefono' => $request->telefono,
         ]);
+    
+    // 3. ENVIAR NOTIFICACIÓN AUTOMÁTICA
+        if ($usuario->telefono) {
+            $numTelefono = trim($usuario->telefono);
+            
+            // Asegurar lada +52 de México si 
+            $telefonoConLada = str_starts_with($numTelefono, '+') 
+                ? $numTelefono 
+                : '+52' . $numTelefono;
+
+            $mensaje = "¡Hola {$usuario->nombre}! Bienvenid@ a Mundos de Tinta 📚✨. Tu cuenta ha sido creada exitosamente.";
+
+            // Disparar WhatsApp
+            $notificador->enviarWhatsApp($telefonoConLada, $mensaje);
+
+            // Disparar SMS 
+            $notificador->enviarSMS($telefonoConLada, $mensaje);
+        }
 
         $token = $usuario->createToken('auth_token')->plainTextToken;
 

@@ -50,8 +50,6 @@ export default function Login({ setUser }) {
         setUser(user);
       }
 
-      if (user.rol_id === 1) {
-
       // 4. Redirección por Rol segun la API
       // (rol_id = 1 es Administrador)
       if (user.rol_id === 1 || user.role === 'admin') {
@@ -59,8 +57,9 @@ export default function Login({ setUser }) {
       } else {
         navigate('/catalogo');
       }
-
-    } catch (error) {
+    }
+    
+      catch (error) {
       if (error.response && error.response.data) {
         setErrors({
           apiError: error.response.data.message || 'Credenciales incorrectas.'
@@ -103,7 +102,6 @@ export default function Login({ setUser }) {
         </div>
 
         <div className="input-group">
-          {/* Contenedor relativo para posicionar el icono del ojito a la derecha */}
           <div style={{ position: 'relative' }}>
             <input 
               type={showPassword ? "text" : "password"} // Cambia dinámicamente según el estado
