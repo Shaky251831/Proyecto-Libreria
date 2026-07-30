@@ -19,7 +19,6 @@ export default function Home() {
         Descubre historias fascinantes, gestiona tus lecturas y explora nuestro catálogo exclusivo de libros.
       </p>
 
-      {/* Botones de acción principales (Catálogo, Iniciar Sesión y Registrarse) */}
       <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
         <Link to="/catalogo" style={{ backgroundColor: '#4A7C59', color: 'white', padding: '14px 28px', borderRadius: '25px', textDecoration: 'none', fontWeight: '600', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
           Explorar Catálogo
