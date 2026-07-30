@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './Auth.css'; 
 
@@ -63,7 +64,8 @@ export default function Catalogo() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', textAlign: 'left' }}>
           {currentBooks.map((book) => (
             <div key={book.id} style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', background: '#fff', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-              <h3 style={{ fontSize: '18px', marginBottom: '10px', color: '#333' }}>{book.titulo}</h3>
+              <Link to={`/libro/${book.id}`} style={{ textDecoration: 'none' }}>
+              <h3 style={{ fontSize: '18px', marginBottom: '10px', color: '#333' }}>{book.titulo}</h3></Link>
               <p style={{ color: '#666', fontSize: '14px', marginBottom: '8px' }}>Autor: {book.autor}</p>
               <p style={{ fontWeight: 'bold', color: '#2b2b2b', marginBottom: '16px' }}>${book.precio} MXN</p>
               <button 

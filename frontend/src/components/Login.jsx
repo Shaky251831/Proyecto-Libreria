@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react'; // 1. Importamos los iconos de lucide-react
+import { Eye, EyeOff } from 'lucide-react'; // Importamos los iconos de lucide-react
 import api from '../api/axios';
 import './Auth.css';
 
 export default function Login({ setUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // 2. Estado para alternar la visibilidad de la contraseña
+  const [showPassword, setShowPassword] = useState(false); // Estado para alternar la visibilidad de la contraseña
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
@@ -141,7 +141,7 @@ export default function Login({ setUser }) {
           {errors.password && <span className="error-message">{errors.password}</span>}
 
           <div style={{ textAlign: 'right', marginTop: '4px' }}>
-            <a href="#" style={{ fontSize: '11px', color: '#d9534f', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
+            <Link to="/forgot-password" style={{ fontSize: '11px', color: '#d9534f', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</Link>
           </div>
         </div>
 

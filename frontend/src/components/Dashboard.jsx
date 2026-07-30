@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import './Auth.css';
 
-export default function Dashboard() {
+export default function Dashboard({ puedeEliminar = true }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   // Agregar libro
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [nuevoLibro, setNuevoLibro] = useState({ title: '', author: '', price: '' });
+  const [nuevoLibro, setNuevoLibro] = useState({
+    title: '',
+    author: '',
+    price: '',
+    stock: '',
+    categoria_id: '',
+    descripcion: '',
+  });
 
   // Lista de libros conectada al backend
   const [books, setBooks] = useState([]);
+  // Lista de categorías (necesarias para el formulario de nuevo libro)
+  const [categorias, setCategorias] = useState([]);
 
   const token = localStorage.getItem('token');
 
-  // Cargar libros desde Laravel al montar el componente
+  // Cargar libros y categorías desde Laravel.
   useEffect(() => {
     fetchBooks();
+    fetchCategorias();
   }, []);
 
   const fetchBooks = async () => {
@@ -30,13 +40,27 @@ export default function Dashboard() {
       });
       const data = await response.json();
       if (response.ok) {
-        // Asegúrate de adaptarlo si tu API devuelve un objeto paginado o un array directo
+        // Betsa poner el API 
         setBooks(Array.isArray(data) ? data : data.data || []);
       }
     } catch (error) {
       console.error('Error al cargar libros:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategorias = async () => {
+    try {
+      const response = await fetch('https://mundosdetinta.duckdns.org/api/categorias', {
+        headers: { 'Accept': 'application/json' }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setCategorias(Array.isArray(data) ? data : data.data || []);
+      }
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
     }
   };
 
@@ -67,7 +91,10 @@ export default function Dashboard() {
   // Guardar el nuevo libro conectado al backend
   const handleAgregarLibro = async (e) => {
     e.preventDefault();
-    if (!nuevoLibro.title || !nuevoLibro.author || !nuevoLibro.price) return;
+    if (!nuevoLibro.title || !nuevoLibro.author || !nuevoLibro.price || !nuevoLibro.stock || !nuevoLibro.categoria_id) {
+      alert('Completa todos los campos obligatorios: título, autor, precio, stock y categoría.');
+      return;
+    }
 
     try {
       const response = await fetch('https://mundosdetinta.duckdns.org/api/libros', {
@@ -78,17 +105,20 @@ export default function Dashboard() {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          titulo: nuevoLibro.title,   
-          autor: nuevoLibro.author,     
-          precio: nuevoLibro.price      
+          titulo: nuevoLibro.title,
+          autor: nuevoLibro.author,
+          precio: nuevoLibro.price,
+          stock: nuevoLibro.stock,
+          categoria_id: nuevoLibro.categoria_id,
+          descripcion: nuevoLibro.descripcion || null,
         })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        fetchBooks(); 
-        setNuevoLibro({ title: '', author: '', price: '' }); 
+        fetchBooks();
+        setNuevoLibro({ title: '', author: '', price: '', stock: '', categoria_id: '', descripcion: '' });
         setMostrarModal(false); // Cerrar formulario
         alert('Libro registrado exitosamente.');
       } else {
@@ -110,7 +140,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: '30px', maxWidth: '1000px', margin: '0 auto' }}>
-      <h2>Panel de Administración - Gestión de Inventario</h2>
+      <h2>{puedeEliminar ? 'Panel de Administración' : 'Panel de Empleado'} - Gestión de Inventario</h2>
       <p style={{ color: '#666' }}>Panel de control de Mundos de Tinta.</p>
 
       {/* --- Barra de búsqueda y botón de agregar --- */}
@@ -162,14 +192,52 @@ export default function Dashboard() {
               />
             </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Precio (MXN)</label>
-              <input 
-                type="number" 
-                value={nuevoLibro.price}
-                onChange={(e) => setNuevoLibro({ ...nuevoLibro, price: e.target.value })}
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Categoría</label>
+              <select
+                value={nuevoLibro.categoria_id}
+                onChange={(e) => setNuevoLibro({ ...nuevoLibro, categoria_id: e.target.value })}
                 required
                 style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+              >
+                <option value="">Selecciona una categoría...</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Precio (MXN)</label>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  value={nuevoLibro.price}
+                  onChange={(e) => setNuevoLibro({ ...nuevoLibro, price: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Stock</label>
+                <input 
+                  type="number" 
+                  value={nuevoLibro.stock}
+                  onChange={(e) => setNuevoLibro({ ...nuevoLibro, stock: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Descripción (opcional)</label>
+              <textarea
+                value={nuevoLibro.descripcion}
+                onChange={(e) => setNuevoLibro({ ...nuevoLibro, descripcion: e.target.value })}
+                rows={2}
+                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical' }}
               />
             </div>
 
@@ -217,12 +285,14 @@ export default function Dashboard() {
                   >
                     Editar
                   </button>
-                  <button 
-                    style={{ background: '#d9534f', color: 'white', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer' }}
-                    onClick={() => handleDelete(book.id)}
-                  >
-                    Eliminar
-                  </button>
+                  {puedeEliminar && (
+                    <button 
+                      style={{ background: '#d9534f', color: 'white', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer' }}
+                      onClick={() => handleDelete(book.id)}
+                    >
+                      Eliminar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))
