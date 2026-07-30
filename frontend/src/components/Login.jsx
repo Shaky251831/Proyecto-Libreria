@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react'; // 1. Importamos los iconos de lucide-react
 import api from '../api/axios';
 import './Auth.css';
 
 export default function Login({ setUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // 2. Estado para alternar la visibilidad de la contraseña
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
@@ -29,21 +31,16 @@ export default function Login({ setUser }) {
     setLoading(true); 
 
     try {
-      // 1. Petición real POST a Laravel (/api/login)
       const response = await api.post('/login', { email, password });
-      
       const { access_token, user } = response.data;
 
-      // 2. Guardar Token y Usuario en localStorage
       localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      // 3. Actualizar el estado global de React si lo están utilizando
       if (setUser) {
         setUser(user);
       }
-      // 4. Redirección por Rol segun la API
-      // (rol_id = 1 es Administrador)
+
       if (user.rol_id === 1) {
         navigate('/admin/dashboard');
       } else {
@@ -51,7 +48,6 @@ export default function Login({ setUser }) {
       }
 
     } catch (error) {
-      // Si la API devuelve credenciales incorrectas (HTTP 401 o 422)
       if (error.response && error.response.data) {
         setErrors({
           apiError: error.response.data.message || 'Credenciales incorrectas.'
@@ -65,6 +61,7 @@ export default function Login({ setUser }) {
       setLoading(false); 
     }
   };
+
   return (
     <div className="auth-container">
       <form onSubmit={handleLogin} className="auth-form">
@@ -73,6 +70,9 @@ export default function Login({ setUser }) {
           <h2 style={{ color: '#2C3E50', fontSize: '22px', margin: '10px 0 0 0' }}>Mundos de Tinta</h2>
           <span style={{ fontSize: '11px', color: '#555', letterSpacing: '2px' }}>LIBRERÍA</span>
         </div>
+
+        {/* Mensaje de error general de la API si existiera */}
+        {errors.apiError && <div className="error-message" style={{ marginBottom: '15px', textAlign: 'center' }}>{errors.apiError}</div>}
 
         <div className="input-group">
           <input 
@@ -90,17 +90,43 @@ export default function Login({ setUser }) {
         </div>
 
         <div className="input-group">
-          <input 
-            type="password" 
-            placeholder="Contraseña" 
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setErrors({ ...errors, password: '' });
-            }}
-            className={errors.password ? 'input-error' : ''}
-            disabled={loading} 
-          />
+          {/* Contenedor relativo para posicionar el icono del ojito a la derecha */}
+          <div style={{ position: 'relative' }}>
+            <input 
+              type={showPassword ? "text" : "password"} // Cambia dinámicamente según el estado
+              placeholder="Contraseña" 
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrors({ ...errors, password: '' });
+              }}
+              className={errors.password ? 'input-error' : ''}
+              style={{ width: '100%', paddingRight: '40px' }} // Dejamos espacio para que el texto no choque con el icono
+              disabled={loading} 
+            />
+            
+            {/* Botón del ojito */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                color: '#666'
+              }}
+              disabled={loading}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+
           {errors.password && <span className="error-message">{errors.password}</span>}
 
           <div style={{ textAlign: 'right', marginTop: '4px' }}>
@@ -108,7 +134,6 @@ export default function Login({ setUser }) {
           </div>
         </div>
 
-        {}
         <button type="submit" className="btn-submit" disabled={loading}>
           {loading ? 'Iniciando sesión...' : 'Entrar'}
         </button>

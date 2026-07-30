@@ -1,55 +1,119 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Auth.css';
 
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  // Formulario para agregar libro
+  // Agregar libro
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nuevoLibro, setNuevoLibro] = useState({ title: '', author: '', price: '' });
 
-  // Ejemplo simulando mientras conecto con el backend
-  const [books, setBooks] = useState([
-    { id: 1, title: 'Cien años de soledad', author: 'Gabriel García Márquez', price: 299 },
-    { id: 2, title: 'El Principito', author: 'Antoine de Saint-Exupéry', price: 150 },
-    { id: 3, title: 'Don Quijote de la Mancha', author: 'Miguel de Cervantes', price: 350 }
-  ]);
+  // Lista de libros conectada al backend
+  const [books, setBooks] = useState([]);
 
-  // Para eliminar un registro
-  const handleDelete = (id) => {
-    setBooks(books.filter(book => book.id !== id));
-    alert(`Libro con ID ${id} eliminado (Simulación Frontend)`);
+  const token = localStorage.getItem('token');
+
+  // Cargar libros desde Laravel al montar el componente
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/libros', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Asegúrate de adaptarlo si tu API devuelve un objeto paginado o un array directo
+        setBooks(Array.isArray(data) ? data : data.data || []);
+      }
+    } catch (error) {
+      console.error('Error al cargar libros:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Para guardar el nuevo libro
-  const handleAgregarLibro = (e) => {
+  // Para eliminar un registro conectado al backend
+  const handleDelete = async (id) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este libro?')) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/libros/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setBooks(books.filter(book => book.id !== id));
+        alert(`Libro con ID ${id} eliminado exitosamente.`);
+      } else {
+        alert('No se pudo eliminar el libro.');
+      }
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+    }
+  };
+
+  // Guardar el nuevo libro conectado al backend
+  const handleAgregarLibro = async (e) => {
     e.preventDefault();
     if (!nuevoLibro.title || !nuevoLibro.author || !nuevoLibro.price) return;
 
-    const libroObjeto = {
-      id: books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1,
-      title: nuevoLibro.title,
-      author: nuevoLibro.author,
-      price: Number(nuevoLibro.price)
-    };
+    try {
+      const response = await fetch('http://localhost:8000/api/libros', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          titulo: nuevoLibro.title,   
+          autor: nuevoLibro.author,     
+          precio: nuevoLibro.price      
+        })
+      });
 
-    setBooks([...books, libroObjeto]);
-    setNuevoLibro({ title: '', author: '', price: '' }); // Limpiar formulario
-    setMostrarModal(false); // Cerrar formulario
+      const data = await response.json();
+
+      if (response.ok) {
+        fetchBooks(); 
+        setNuevoLibro({ title: '', author: '', price: '' }); 
+        setMostrarModal(false); // Cerrar formulario
+        alert('Libro registrado exitosamente.');
+      } else {
+        alert('Error al registrar el libro: ' + (data.message || 'Verifica los datos'));
+      }
+    } catch (error) {
+      console.error('Error al guardar:', error);
+    }
   };
 
-  const filteredBooks = books.filter(book => 
-    book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.author.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBooks = books.filter(book => {
+    const title = book.title || book.titulo || '';
+    const author = book.author || book.autor || '';
+    return (
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      author.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <div style={{ padding: '30px', maxWidth: '1000px', margin: '0 auto' }}>
       <h2>Panel de Administración - Gestión de Inventario</h2>
       <p style={{ color: '#666' }}>Panel de control de Mundos de Tinta.</p>
 
-      {/* --- Barra de búsqueda y botón agregar --- */}
+      {/* --- Barra de búsqueda y botón de agregar --- */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', marginBottom: '20px' }}>
         <input 
           type="text" 
@@ -133,17 +197,23 @@ export default function Dashboard() {
           </tr>
         </thead>
         <tbody>
-          {filteredBooks.length > 0 ? (
+          {loading ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#777' }}>
+                Cargando inventario...
+              </td>
+            </tr>
+          ) : filteredBooks.length > 0 ? (
             filteredBooks.map(book => (
               <tr key={book.id} style={{ borderBottom: '1px solid #eee' }}>
                 <td style={{ padding: '12px' }}>{book.id}</td>
-                <td style={{ padding: '12px' }}>{book.title}</td>
-                <td style={{ padding: '12px' }}>{book.author}</td>
-                <td style={{ padding: '12px' }}>${book.price} MXN</td>
+                <td style={{ padding: '12px' }}>{book.title || book.titulo}</td>
+                <td style={{ padding: '12px' }}>{book.author || book.autor}</td>
+                <td style={{ padding: '12px' }}>${book.price || book.precio} MXN</td>
                 <td style={{ padding: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '8px' }}>
                   <button 
                     style={{ background: '#f0ad4e', color: 'white', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer' }}
-                    onClick={() => alert(`Editar libro: ${book.title}`)}
+                    onClick={() => alert(`Editar libro: ${book.title || book.titulo}`)}
                   >
                     Editar
                   </button>

@@ -12,13 +12,22 @@ export default function ProtectedRoute({ allowedRoles, userRole, children }) {
     return <Navigate to="/login" replace />;
   }
 
-  const currentRole = userRole || user.rol_id || user.role;
-
+  // Extraemos el rol de forma segura contemplando la estructura de Laravel
+  const rolId = user.rol?.id || user.rol_id;
+  const rolNombre = user.rol?.nombre || user.role || '';
   
+  // currentRole puede evaluarse por ID (ej. 1) o por nombre (ej. 'Administrador', 'admin')
+  const currentRole = userRole || rolId;
+
   if (allowedRoles) {
-    const isAllowed = allowedRoles.some(
-      (role) => role === currentRole || String(role) === String(currentRole)
-    );
+    const isAllowed = allowedRoles.some((role) => {
+      // Comparamos si coincide con el ID numérico o con el nombre del rol en texto
+      return (
+        role === rolId || 
+        String(role) === String(rolId) ||
+        String(role).toLowerCase() === String(rolNombre).toLowerCase()
+      );
+    });
 
     if (!isAllowed) {
       alert('Acceso denegado: No tienes permisos de administrador.');
