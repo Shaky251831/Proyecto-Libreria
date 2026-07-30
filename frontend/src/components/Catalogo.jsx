@@ -3,7 +3,6 @@ import axios from 'axios';
 import './Auth.css'; 
 
 export default function Catalogo() {
-  // Estado para guardar los libros que vendrán del backend
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +15,6 @@ export default function Catalogo() {
   useEffect(() => {
     axios.get('https://mundosdetinta.duckdns.org/api/libros')
       .then((response) => {
-        // Maneja la respuesta tanto si viene en .data o .data.data
         const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
         setBooks(data);
         setLoading(false);
@@ -40,17 +38,30 @@ export default function Catalogo() {
   const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
   const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
 
+  if (loading) return <div style={{ textAlign: 'center', padding: '50px' }}>Cargando libros...</div>;
+  if (error) return <div style={{ textAlign: 'center', padding: '50px', color: 'red' }}>{error}</div>;
+
   return (
-    
     <div style={{ backgroundColor: '#D2E69C', minHeight: 'calc(100vh - 70px)', padding: '40px 20px' }}>
       
       <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
         <h2 style={{ color: '#2C3E50', fontSize: '28px', fontWeight: '700' }}>Vitrina de Libros - Mundos de Tinta</h2>
-        <p style={{ color: '#444', marginBottom: '30px' }}>Explora nuestro catálogo disponible y selecciona tus títulos favoritos.</p>
+        <p style={{ color: '#444', marginBottom: '20px' }}>Explora nuestro catálogo disponible y selecciona tus títulos favoritos.</p>
+
+        {/* Barra de Búsqueda */}
+        <div style={{ marginBottom: '30px' }}>
+          <input 
+            type="text" 
+            placeholder="Buscar por título o autor..." 
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            style={{ width: '100%', maxWidth: '500px', padding: '10px 15px', borderRadius: '8px', border: '1px solid #ccc', outline: 'none' }}
+          />
+        </div>
 
         {/* Contenedor de la cuadrícula de libros */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', textAlign: 'left' }}>
-          {books.map((book) => (
+          {currentBooks.map((book) => (
             <div key={book.id} style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', background: '#fff', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
               <h3 style={{ fontSize: '18px', marginBottom: '10px', color: '#333' }}>{book.titulo}</h3>
               <p style={{ color: '#666', fontSize: '14px', marginBottom: '8px' }}>Autor: {book.autor}</p>
@@ -64,6 +75,29 @@ export default function Catalogo() {
             </div>
           ))}
         </div>
+
+        {/* Controles de Paginación */}
+        {totalPages > 1 && (
+          <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+            <button 
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              style={{ padding: '8px 15px', borderRadius: '5px', border: 'none', background: currentPage === 1 ? '#ccc' : '#2C3E50', color: 'white', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+            >
+              Anterior
+            </button>
+            <span style={{ alignSelf: 'center', fontWeight: 'bold', color: '#2C3E50' }}>
+              Página {currentPage} de {totalPages}
+            </span>
+            <button 
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              style={{ padding: '8px 15px', borderRadius: '5px', border: 'none', background: currentPage === totalPages ? '#ccc' : '#2C3E50', color: 'white', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
       </div>
 
     </div>
