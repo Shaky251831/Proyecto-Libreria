@@ -9,6 +9,11 @@ class Venta extends Model
     protected $table = 'ventas';
     protected $fillable = ['usuario_id', 'monto_total', 'metodo_pago', 'tipo', 'estado', 'fecha_venta'];
 
+    protected $casts = [
+        'fecha_venta' => 'datetime',
+        'monto_total' => 'decimal:2',
+    ];
+
     public function usuario()
     {
         return $this->belongsTo(User::class, 'usuario_id');

@@ -16,6 +16,12 @@ class Prestamo extends Model
         'fecha_devolucion'
     ];
 
+    protected $casts = [
+        'fecha_inicial' => 'date',
+        'fecha_limite' => 'date',
+        'fecha_devolucion' => 'date',
+    ];
+
     public function usuario()
     {
         return $this->belongsTo(User::class, 'usuario_id');

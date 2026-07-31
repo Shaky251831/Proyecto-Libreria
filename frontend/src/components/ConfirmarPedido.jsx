@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api/axios';
 import { useCart } from '../context/CartContext';
+import { useUI } from '../context/UIContext';
 
 // Mensaje genérico para cualquier error que no debamos exponer tal cual al usuario
 const MENSAJE_ERROR_GENERICO = 'Ocurrió un error al procesar tu solicitud. Intenta de nuevo más tarde.';
@@ -16,6 +17,7 @@ export default function ConfirmarPedido() {
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
+  const { openLogin } = useUI();
 
   // Datos del formulario de tarjeta (solo aplica cuando metodo === 'compra')
   const [tarjeta, setTarjeta] = useState({ numero: '', vencimiento: '', cvv: '' });
@@ -88,6 +90,12 @@ export default function ConfirmarPedido() {
     }
 
     // Solo validamos los datos de la tarjeta si la operación es una compra
+    if (!localStorage.getItem('token')) {
+      setErrorMsg('Inicia sesión antes de confirmar la operación.');
+      openLogin();
+      return;
+    }
+
     if (metodo === 'compra' && !validarFormularioTarjeta()) {
       setErrorMsg('Revisa los datos de tu tarjeta antes de continuar.');
       return;
@@ -96,7 +104,7 @@ export default function ConfirmarPedido() {
     setProcesando(true);
 
     try {
-      await api.post('/ventas', {
+      await api.post(metodo === 'compra' ? '/ventas' : '/prestamos', {
         tipo: metodo === 'compra' ? 'Compra' : 'Préstamo',
         metodo_pago: metodo === 'compra' ? 'Tarjeta' : 'Préstamo',
         items: items.map((item) => ({

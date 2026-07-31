@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/mis-prestamos', [PrestamoController::class, 'misPrestamos']);
+    Route::post('/prestamos', [PrestamoController::class, 'store']);
     Route::get('/mis-compras', [VentaController::class, 'misCompras']);
 
     // NUEVO: procesa compra o préstamo (crea venta + detalle + descuenta stock)
