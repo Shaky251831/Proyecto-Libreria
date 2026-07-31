@@ -7,17 +7,28 @@ export default function Historial() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.get('/mis-compras')
-      .then((response) => {
-        const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
-        setTransacciones(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('No se pudo cargar tu historial de compras.');
-        setLoading(false);
-      });
+    cargarCompras();
   }, []);
+
+  const cargarCompras = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get('/mis-compras');
+      const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
+      setTransacciones(data);
+    } catch (err) {
+      const status = err.response?.status;
+      if (status === 401) {
+        setError('Tu sesión expiró. Inicia sesión de nuevo para ver tus compras.');
+      } else {
+        setError('No se pudo cargar tu historial de compras. Intenta de nuevo más tarde.');
+      }
+      console.error('Error al cargar /mis-compras:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{ padding: '30px', maxWidth: '800px', margin: '0 auto' }}>
@@ -27,7 +38,15 @@ export default function Historial() {
       {loading ? (
         <p style={{ textAlign: 'center', color: '#666' }}>Cargando historial...</p>
       ) : error ? (
-        <p style={{ textAlign: 'center', color: 'red' }}>{error}</p>
+        <div style={{ textAlign: 'center', color: '#721c24', background: '#f8d7da', padding: '12px', borderRadius: '6px' }}>
+          <p style={{ margin: '0 0 10px' }}>{error}</p>
+          <button
+            onClick={cargarCompras}
+            style={{ background: '#721c24', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}
+          >
+            Reintentar
+          </button>
+        </div>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', borderRadius: '6px', overflow: 'hidden' }}>
           <thead>
