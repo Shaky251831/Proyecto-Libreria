@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import './Auth.css';
 
 export default function Profile({ user, setUser }) {
-  // Estado local para simular la edición del perfil
-  const [name, setName] = useState(user?.name || 'Bris Márquez');
-  const [email, setEmail] = useState(user?.email || 'admin@admin.com');
+const [name, setName] = useState(user?.nombre || '');
+const [email, setEmail] = useState(user?.email || '');
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleUpdate = (e) => {

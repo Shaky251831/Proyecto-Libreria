@@ -19,13 +19,26 @@ export function CartProvider({ children }) {
   }, [items]);
 
   const addItem = useCallback((book, qty = 1) => {
+    const stockDisponible =
+      book.stock !== undefined && book.stock !== null ? Number(book.stock) : Infinity;
+    let mensajeStock = null;
+
     setItems((prev) => {
       const existing = prev.find((it) => it.id === book.id);
+      const cantidadActual = existing ? existing.quantity : 0;
+      const cantidadFinal = Math.min(cantidadActual + qty, stockDisponible);
+
+      if (cantidadFinal <= cantidadActual) {
+        mensajeStock = `Ya tienes en el carrito todas las unidades disponibles de "${book.titulo}" (stock: ${stockDisponible}).`;
+        return prev;
+      }
+
       if (existing) {
         return prev.map((it) =>
-          it.id === book.id ? { ...it, quantity: it.quantity + qty } : it
+          it.id === book.id ? { ...it, quantity: cantidadFinal, stock: stockDisponible } : it
         );
       }
+
       return [
         ...prev,
         {
@@ -34,15 +47,31 @@ export function CartProvider({ children }) {
           autor: book.autor,
           precio: Number(book.precio),
           img_portada: book.img_portada || null,
-          quantity: qty,
+          quantity: cantidadFinal,
+          stock: stockDisponible,
         },
       ];
     });
-    setIsOpen(true);
+
+    if (mensajeStock) {
+      alert(mensajeStock);
+    } else {
+      setIsOpen(true);
+    }
   }, []);
 
   const increaseQty = useCallback((id) => {
-    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, quantity: it.quantity + 1 } : it)));
+    setItems((prev) =>
+      prev.map((it) => {
+        if (it.id !== id) return it;
+        const limite = it.stock ?? Infinity;
+        if (it.quantity >= limite) {
+          alert(`No puedes agregar más unidades de "${it.titulo}". Stock disponible: ${limite}.`);
+          return it;
+        }
+        return { ...it, quantity: it.quantity + 1 };
+      })
+    );
   }, []);
 
   const decreaseQty = useCallback((id) => {

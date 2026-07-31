@@ -1,23 +1,56 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
+import { useCart } from '../context/CartContext';
 
 export default function ConfirmarPedido() {
   const [metodo, setMetodo] = useState('compra');
   const [pagoExitoso, setPagoExitoso] = useState(false);
+  const [procesando, setProcesando] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
+  const { items, totalPrice, clearCart } = useCart();
 
-  const handleProcesarPago = (e) => {
+  const handleProcesarPago = async (e) => {
     e.preventDefault();
-    setPagoExitoso(true);
-    setTimeout(() => {
-      navigate('/historial'); 
-    }, 2500);
+    setErrorMsg('');
+
+    if (items.length === 0) {
+      setErrorMsg('Tu carrito está vacío. Agrega libros antes de continuar.');
+      return;
+    }
+
+    setProcesando(true);
+
+    try {
+      await api.post('/ventas', {
+        tipo: metodo === 'compra' ? 'Compra' : 'Préstamo',
+        metodo_pago: metodo === 'compra' ? 'Tarjeta' : 'Préstamo',
+        items: items.map((item) => ({
+          libro_id: item.id,
+          cantidad: item.quantity,
+        })),
+      });
+
+      clearCart();
+      setPagoExitoso(true);
+      setTimeout(() => {
+        navigate('/historial');
+      }, 2500);
+    } catch (error) {
+      const mensaje =
+        error.response?.data?.message ||
+        'No se pudo procesar tu pedido. Intenta de nuevo.';
+      setErrorMsg(mensaje);
+    } finally {
+      setProcesando(false);
+    }
   };
 
   return (
     <div style={{ padding: '30px', maxWidth: '600px', margin: '0 auto' }}>
       <div className="auth-form" style={{ maxWidth: '100%', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', background: 'white', padding: '30px', borderRadius: '8px' }}>
-        
+
         <h2 style={{ textAlign: 'center', color: '#2C3E50', marginBottom: '10px' }}>Confirmar Pedido</h2>
         <p style={{ textAlign: 'center', color: '#666', fontSize: '13px', marginBottom: '25px' }}>
           Elige la modalidad de tu orden en Mundos de Tinta.
@@ -29,28 +62,40 @@ export default function ConfirmarPedido() {
           </div>
         ) : (
           <form onSubmit={handleProcesarPago}>
-            
+
+            {errorMsg && (
+              <div style={{ background: '#f8d7da', color: '#721c24', padding: '12px', borderRadius: '6px', marginBottom: '15px', fontSize: '13px', textAlign: 'center' }}>
+                {errorMsg}
+              </div>
+            )}
+
+            {items.length > 0 && (
+              <p style={{ textAlign: 'center', fontSize: '13px', color: '#333', marginBottom: '15px' }}>
+                Total a pagar: <strong>${totalPrice.toFixed(2)} MXN</strong>
+              </p>
+            )}
+
             <div style={{ marginBottom: '20px' }}>
               <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#333', display: 'block', marginBottom: '8px' }}>
                 Selecciona el tipo de operación:
               </label>
               <div style={{ display: 'flex', gap: '20px' }}>
                 <label style={{ cursor: 'pointer' }}>
-                  <input 
-                    type="radio" 
-                    name="tipo" 
-                    value="compra" 
-                    checked={metodo === 'compra'} 
-                    onChange={() => setMetodo('compra')} 
+                  <input
+                    type="radio"
+                    name="tipo"
+                    value="compra"
+                    checked={metodo === 'compra'}
+                    onChange={() => setMetodo('compra')}
                   /> Comprar Libro
                 </label>
                 <label style={{ cursor: 'pointer' }}>
-                  <input 
-                    type="radio" 
-                    name="tipo" 
-                    value="prestamo" 
-                    checked={metodo === 'prestamo'} 
-                    onChange={() => setMetodo('prestamo')} 
+                  <input
+                    type="radio"
+                    name="tipo"
+                    value="prestamo"
+                    checked={metodo === 'prestamo'}
+                    onChange={() => setMetodo('prestamo')}
                   /> Solicitar Préstamo Temporal
                 </label>
               </div>
@@ -59,10 +104,10 @@ export default function ConfirmarPedido() {
             {metodo === 'compra' ? (
               <div style={{ marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '6px' }}>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#333' }}>Datos de Tarjeta (Simulación)</h4>
-                <input 
-                  type="text" 
-                  placeholder="Número de Tarjeta (XXXX-XXXX-XXXX-XXXX)" 
-                  required 
+                <input
+                  type="text"
+                  placeholder="Número de Tarjeta (XXXX-XXXX-XXXX-XXXX)"
+                  required
                   style={{ width: '100%', padding: '10px', marginBottom: '10px', borderRadius: '6px', border: '1px solid #ccc' }}
                 />
                 <div style={{ display: 'flex', gap: '10px' }}>
@@ -78,8 +123,13 @@ export default function ConfirmarPedido() {
               </div>
             )}
 
-            <button type="submit" className="btn-submit" style={{ width: '100%', padding: '12px', background: '#3a6347', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-              {metodo === 'compra' ? 'Confirmar y Pagar Compra' : 'Confirmar Solicitud de Préstamo'}
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={procesando}
+              style={{ width: '100%', padding: '12px', background: procesando ? '#8ba997' : '#3a6347', color: 'white', border: 'none', borderRadius: '6px', cursor: procesando ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+            >
+              {procesando ? 'Procesando...' : (metodo === 'compra' ? 'Confirmar y Pagar Compra' : 'Confirmar Solicitud de Préstamo')}
             </button>
           </form>
         )}

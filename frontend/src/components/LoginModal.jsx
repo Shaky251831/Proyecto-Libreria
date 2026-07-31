@@ -12,12 +12,12 @@ export default function LoginModal({ setUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nombre, setNombre] = useState('');
+  const [telefono, setTelefono] = useState(''); // <-- Nuevo estado para teléfono
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Bloquea el scroll del fondo mientras el modal está abierto
   useEffect(() => {
     document.body.style.overflow = isLoginOpen ? 'hidden' : '';
     return () => {
@@ -29,6 +29,7 @@ export default function LoginModal({ setUser }) {
     setEmail('');
     setPassword('');
     setNombre('');
+    setTelefono(''); // <-- Limpiar teléfono
     setPasswordConfirm('');
     setErrors({});
     setLoading(false);
@@ -89,8 +90,17 @@ export default function LoginModal({ setUser }) {
     const newErrors = {};
     if (!nombre.trim()) newErrors.nombre = 'Tu nombre es obligatorio.';
     if (!email.trim() || !email.includes('@')) newErrors.email = 'Introduce un correo válido.';
+    
+    // <-- Nueva validación de teléfono
+    if (!telefono.trim()) {
+      newErrors.telefono = 'El teléfono es obligatorio para notificaciones.';
+    } else if (telefono.length < 10) {
+      newErrors.telefono = 'El teléfono debe tener 10 dígitos.';
+    }
+
     if (!password || password.length < 8) newErrors.password = 'Mínimo 8 caracteres.';
     if (password !== passwordConfirm) newErrors.passwordConfirm = 'Las contraseñas no coinciden.';
+    
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -101,16 +111,26 @@ export default function LoginModal({ setUser }) {
       await api.post('/register', {
         nombre,
         email,
+        telefono, // <-- Enviando el teléfono al backend
         password,
         password_confirmation: passwordConfirm,
       });
-      // Tras registrarse con éxito, pasamos a la vista de login
       setAuthView('login');
       setErrors({ apiSuccess: 'Cuenta creada. Ahora inicia sesión.' });
     } catch (error) {
-      setErrors({
-        apiError: error.response?.data?.message || 'No se pudo completar el registro.',
-      });
+      // Manejo de errores de validación desde Laravel (ej. contraseña sin mayúscula)
+      if (error.response && error.response.status === 422) {
+        const rawErrors = error.response.data.errors || {};
+        const normalized = {};
+        Object.keys(rawErrors).forEach((campo) => {
+          normalized[campo] = Array.isArray(rawErrors[campo]) ? rawErrors[campo][0] : rawErrors[campo];
+        });
+        setErrors(normalized);
+      } else {
+        setErrors({
+          apiError: error.response?.data?.message || 'No se pudo completar el registro.',
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -163,6 +183,27 @@ export default function LoginModal({ setUser }) {
             {errors.email && <span className="mdt-field-error">{errors.email}</span>}
           </div>
 
+          {/* <-- Nuevo Campo de Teléfono (Solo visible en Registro) */}
+          {isRegister && (
+            <div className="mdt-field">
+              <label>Teléfono (WhatsApp / SMS)</label>
+              <input
+                type="tel"
+                value={telefono}
+                maxLength={10}
+                onChange={(e) => { 
+                  const val = e.target.value.replace(/\D/g, ''); 
+                  setTelefono(val); 
+                  setErrors({ ...errors, telefono: '' }); 
+                }}
+                placeholder="10 dígitos"
+                disabled={loading}
+                className={errors.telefono ? 'mdt-input-error' : ''}
+              />
+              {errors.telefono && <span className="mdt-field-error">{errors.telefono}</span>}
+            </div>
+          )}
+
           <div className="mdt-field">
             <label>Contraseña</label>
             <div className="mdt-input-wrap">
@@ -194,14 +235,16 @@ export default function LoginModal({ setUser }) {
           {isRegister && (
             <div className="mdt-field">
               <label>Confirmar contraseña</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={passwordConfirm}
-                onChange={(e) => { setPasswordConfirm(e.target.value); setErrors({ ...errors, passwordConfirm: '' }); }}
-                placeholder="••••••••"
-                disabled={loading}
-                className={errors.passwordConfirm ? 'mdt-input-error' : ''}
-              />
+              <div className="mdt-input-wrap">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={passwordConfirm}
+                  onChange={(e) => { setPasswordConfirm(e.target.value); setErrors({ ...errors, passwordConfirm: '' }); }}
+                  placeholder="••••••••"
+                  disabled={loading}
+                  className={errors.passwordConfirm ? 'mdt-input-error' : ''}
+                />
+              </div>
               {errors.passwordConfirm && <span className="mdt-field-error">{errors.passwordConfirm}</span>}
             </div>
           )}

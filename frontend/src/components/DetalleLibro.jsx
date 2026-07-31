@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
+import { useCart } from '../context/CartContext';
 
 export default function DetalleLibro() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addItem } = useCart();
   const [libro, setLibro] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -76,7 +78,7 @@ export default function DetalleLibro() {
                 cursor: libro.stock > 0 ? 'pointer' : 'not-allowed',
                 fontWeight: '600',
               }}
-              onClick={() => alert(`Agregaste "${libro.titulo}" al carrito`)}
+              onClick={() => addItem(libro)}
             >
               Añadir al Carrito
             </button>

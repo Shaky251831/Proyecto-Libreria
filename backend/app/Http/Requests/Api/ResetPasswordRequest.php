@@ -25,8 +25,8 @@ class ResetPasswordRequest extends FormRequest
                 'regex:/[a-z]/',
                 'regex:/[A-Z]/',
                 'regex:/[0-9]/',
-                'regex:/[@$!%*?&]/',
-            ];
+                'regex:/[^a-zA-Z0-9]/', // Al menos un carácter especial (cualquiera)
+            ]
         ];
     }
 

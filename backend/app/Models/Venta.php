@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Venta extends Model
 {
     protected $table = 'ventas';
-    protected $fillable = ['usuario_id', 'monto_total', 'metodo_pago', 'estado', 'fecha_venta'];
+    protected $fillable = ['usuario_id', 'monto_total', 'metodo_pago', 'tipo', 'estado', 'fecha_venta'];
 
     public function usuario()
     {

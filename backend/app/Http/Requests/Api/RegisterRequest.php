@@ -15,6 +15,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'nombre'   => 'required|string|max:100',
+            'telefono' => 'nullable|string|max:20',
             'email'    => 'required|string|email|max:150|unique:usuarios,email',
             'password' => [
                 'required',
@@ -23,9 +24,9 @@ class RegisterRequest extends FormRequest
                 'regex:/[a-z]/',
                 'regex:/[A-Z]/',
                 'regex:/[0-9]/',
-                'regex:/[@$!%*?&]/',
+                'regex:/[^a-zA-Z0-9]/', 
             ],
-            'telefono' => 'nullable|string|max:20',
+            
         ];
     }
 

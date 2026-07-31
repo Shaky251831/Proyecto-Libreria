@@ -2,18 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import api from '../api/axios';
-import './Auth.css';
-
-function getErrorMessage(err) {
-  const data = err?.response?.data;
-  if (!data) return "Ocurrió un error inesperado. Intenta de nuevo.";
-  if (data.message && !data.errors) return data.message;
-  if (data.errors) {
-    const primerCampo = Object.values(data.errors)[0];
-    return Array.isArray(primerCampo) ? primerCampo[0] : String(primerCampo);
-  }
-  return "Ocurrió un error inesperado.";
-}
 
 export default function Register({ setUser }) {
   const [formData, setFormData] = useState({
@@ -24,23 +12,26 @@ export default function Register({ setUser }) {
     password_confirmation: '',
     rol_id: 3
   });
+  
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     let { name, value } = e.target;
+    
+    // Limpieza estricta: solo permite números en el teléfono
     if (name === 'telefono') {
-      value = value.replace(/\D/g, ''); // Elimina cualquier letra o símbolo
+      value = value.replace(/\D/g, ''); 
     }
 
     setFormData({
       ...formData,
       [name]: value
     });
+    
     setErrors({
       ...errors,
       [name]: '',
@@ -53,15 +44,11 @@ export default function Register({ setUser }) {
     setErrors({});
     let newErrors = {};
 
-    if (!formData.nombre?.trim()) {
-      newErrors.nombre = 'El nombre es obligatorio.';
-    }
-    if (!formData.email.includes('@')) {
-      newErrors.email = 'Introduce un correo válido.';
-    }
+    if (!formData.nombre?.trim()) newErrors.nombre = 'El nombre es obligatorio.';
+    if (!formData.email.includes('@')) newErrors.email = 'Introduce un correo válido.';
     
     if (!formData.telefono?.trim()) {
-      newErrors.telefono = 'El teléfono es obligatorio.';
+      newErrors.telefono = 'El teléfono es obligatorio para notificaciones.';
     } else if (formData.telefono.length < 10) {
       newErrors.telefono = 'El teléfono debe tener 10 dígitos.';
     }
@@ -87,161 +74,148 @@ export default function Register({ setUser }) {
       localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      if (setUser) {
-        setUser(user);
-      }
+      if (setUser) setUser(user);
 
-      alert('¡Cuenta registrada exitosamente!');
+      alert('¡Bienvenido a la comunidad de Mundos de Tinta!');
       navigate('/catalogo');
 
     } catch (error) {
-  if (error.response && error.response.status === 422) {
-    const rawErrors = error.response.data.errors || {};
-    const normalized = {};
-    Object.keys(rawErrors).forEach((campo) => {
-      normalized[campo] = Array.isArray(rawErrors[campo]) ? rawErrors[campo][0] : rawErrors[campo];
-    });
-    setErrors(normalized);
-  } else {
-    setErrors({ apiError: 'No se pudo conectar con el servidor backend.' });
-  }
-} finally {
-  setLoading(false); 
-}
+      if (error.response && error.response.status === 422) {
+        const rawErrors = error.response.data.errors || {};
+        const normalized = {};
+        Object.keys(rawErrors).forEach((campo) => {
+          normalized[campo] = Array.isArray(rawErrors[campo]) ? rawErrors[campo][0] : rawErrors[campo];
+        });
+        setErrors(normalized);
+      } else {
+        setErrors({ apiError: 'Servicio no disponible temporalmente.' });
+      }
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  // Estilos "Nova Style" en línea para rápida implementación
+  const containerStyle = {
+    backgroundColor: '#121212',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+    padding: '20px'
+  };
+
+  const formStyle = {
+    backgroundColor: '#1a1a1a',
+    padding: '50px 40px',
+    borderRadius: '4px',
+    width: '100%',
+    maxWidth: '450px',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+  };
+
+  const inputContainerStyle = {
+    marginBottom: '20px',
+    position: 'relative'
+  };
+
+  const labelStyle = {
+    display: 'block',
+    color: '#888',
+    fontSize: '0.75rem',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    marginBottom: '8px'
+  };
+
+  const inputStyle = {
+    width: '100%',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderBottom: '1px solid #444',
+    color: '#fff',
+    padding: '10px 0',
+    fontSize: '1rem',
+    outline: 'none',
+    transition: 'border-color 0.3s ease'
+  };
+
+  const errorTextStyle = {
+    color: '#e74c3c',
+    fontSize: '0.75rem',
+    marginTop: '5px',
+    display: 'block'
   };
 
   return (
-    <div className="auth-container">
-      <form onSubmit={handleRegister} className="auth-form">
+    <div style={containerStyle}>
+      <form onSubmit={handleRegister} style={formStyle}>
         
-        <h2 style={{ textAlign: 'center', color: '#2C3E50', marginBottom: '20px' }}>Crear Cuenta</h2>
-
-        {errors.apiError && <div className="error-message" style={{ marginBottom: '10px', textAlign: 'center' }}>{errors.apiError}</div>}
-        <div className="input-group">
-          <input 
-            type="text" 
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-            placeholder="Nombre Completo" 
-            className={errors.nombre ? 'input-error' : ''}
-            disabled={loading}
-          />
-          {errors.nombre && <span className="error-message">{errors.nombre}</span>}
-        </div>
-        <div className="input-group">
-          <input 
-            type="email" 
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Correo Electrónico" 
-            className={errors.email ? 'input-error' : ''}
-            disabled={loading}
-          />
-          {errors.email ? (
-            <span className="error-message">{errors.email}</span>
-          ) : (
-            <span className="error-text">*Introduce un correo válido</span>
-          )}
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h1 style={{ color: '#c5a059', fontSize: '0.9rem', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '10px' }}>
+            Mundos de Tinta
+          </h1>
+          <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 'normal', margin: '0' }}>
+            Crear una cuenta
+          </h2>
+          <p style={{ color: '#888', fontSize: '0.9rem', marginTop: '10px' }}>
+            Únete a nuestra comunidad de lectores exclusivos.
+          </p>
         </div>
 
-        <div className="input-group">
-          <input 
-            type="tel" 
-            name="telefono"
-            value={formData.telefono}
-            onChange={handleChange}
-            placeholder="Número de Teléfono (10 dígitos)" 
-            maxLength={10}
-            className={errors.telefono ? 'input-error' : ''}
-            disabled={loading}
-          />
-          {errors.telefono ? (
-            <span className="error-message">{errors.telefono}</span>
-          ) : (
-            <span className="error-text">*Solo números (10 dígitos)</span>
-          )}
+        {errors.apiError && (
+          <div style={{ backgroundColor: 'rgba(231, 76, 60, 0.1)', border: '1px solid #e74c3c', color: '#e74c3c', padding: '10px', borderRadius: '4px', marginBottom: '20px', textAlign: 'center', fontSize: '0.85rem' }}>
+            {errors.apiError}
+          </div>
+        )}
+
+        <div style={inputContainerStyle}>
+          <label style={labelStyle}>Nombre Completo</label>
+          <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} style={{...inputStyle, borderBottomColor: errors.nombre ? '#e74c3c' : '#444'}} disabled={loading} placeholder="Ej. Ana García" />
+          {errors.nombre && <span style={errorTextStyle}>{errors.nombre}</span>}
         </div>
-        <div className="input-group">
+
+        <div style={inputContainerStyle}>
+          <label style={labelStyle}>Correo Electrónico</label>
+          <input type="email" name="email" value={formData.email} onChange={handleChange} style={{...inputStyle, borderBottomColor: errors.email ? '#e74c3c' : '#444'}} disabled={loading} placeholder="correo@ejemplo.com" />
+          {errors.email && <span style={errorTextStyle}>{errors.email}</span>}
+        </div>
+
+        <div style={inputContainerStyle}>
+          <label style={labelStyle}>Teléfono (WhatsApp / SMS)</label>
+          <input type="tel" name="telefono" value={formData.telefono} onChange={handleChange} maxLength={10} style={{...inputStyle, borderBottomColor: errors.telefono ? '#e74c3c' : '#444'}} disabled={loading} placeholder="10 dígitos" />
+          {errors.telefono && <span style={errorTextStyle}>{errors.telefono}</span>}
+        </div>
+
+        <div style={inputContainerStyle}>
+          <label style={labelStyle}>Contraseña</label>
           <div style={{ position: 'relative' }}>
-            <input 
-              type={showPassword ? "text" : "password"} 
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Contraseña" 
-              className={errors.password ? 'input-error' : ''}
-              style={{ width: '100%', paddingRight: '40px' }}
-              disabled={loading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#666',
-                display: 'flex',
-                alignItems: 'center'
-              }}
-              disabled={loading}
-            >
+            <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} style={{...inputStyle, borderBottomColor: errors.password ? '#e74c3c' : '#444', paddingRight: '40px'}} disabled={loading} placeholder="Mínimo 8 caracteres" />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '0', top: '10px', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.password ? (
-            <span className="error-message">{errors.password}</span>
-          ) : (
-            <span className="error-text">*La contraseña debe tener al menos 8 caracteres</span>
-          )}
+          {errors.password && <span style={errorTextStyle}>{errors.password}</span>}
         </div>
-        <div className="input-group">
+
+        <div style={inputContainerStyle}>
+          <label style={labelStyle}>Confirmar Contraseña</label>
           <div style={{ position: 'relative' }}>
-            <input 
-              type={showConfirmPassword ? "text" : "password"} 
-              name="password_confirmation"
-              value={formData.password_confirmation}
-              onChange={handleChange}
-              placeholder="Confirmar contraseña" 
-              className={errors.password_confirmation ? 'input-error' : ''}
-              style={{ width: '100%', paddingRight: '40px' }}
-              disabled={loading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#666',
-                display: 'flex',
-                alignItems: 'center'
-              }}
-              disabled={loading}
-            >
+            <input type={showConfirmPassword ? "text" : "password"} name="password_confirmation" value={formData.password_confirmation} onChange={handleChange} style={{...inputStyle, borderBottomColor: errors.password_confirmation ? '#e74c3c' : '#444', paddingRight: '40px'}} disabled={loading} placeholder="Repite tu contraseña" />
+            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ position: 'absolute', right: '0', top: '10px', background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          {errors.password_confirmation && <span className="error-message">{errors.password_confirmation}</span>}
+          {errors.password_confirmation && <span style={errorTextStyle}>{errors.password_confirmation}</span>}
         </div>
 
-        <button type="submit" className="btn-submit" disabled={loading}>
-          {loading ? 'Registrando...' : 'Registrarse'}
+        <button type="submit" disabled={loading} style={{ width: '100%', backgroundColor: '#c5a059', color: '#121212', border: 'none', padding: '14px', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '10px', transition: 'background-color 0.3s' }}>
+          {loading ? 'Procesando...' : 'Crear Cuenta'}
         </button>
 
-        <div className="auth-links">
-          ¿Ya tienes una cuenta? <Link to="/login">Iniciar Sesión</Link>
+        <div style={{ textAlign: 'center', marginTop: '25px', color: '#888', fontSize: '0.85rem' }}>
+          ¿Ya tienes cuenta? <Link to="/login" style={{ color: '#c5a059', textDecoration: 'none', fontWeight: 'bold' }}>Inicia sesión</Link>
         </div>
 
       </form>
