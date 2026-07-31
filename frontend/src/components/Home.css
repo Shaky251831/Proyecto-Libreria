@@ -1,0 +1,139 @@
+@import './BookCard.css';
+
+.mdt-home { overflow-x: hidden; }
+
+/* ---------- HERO ---------- */
+.mdt-hero {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #100f0d 0%, #0f0e0c 60%), url('../assets/hero.png');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+.mdt-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(203,161,90,0.10), transparent 60%),
+    linear-gradient(180deg, rgba(15,14,12,0.55) 0%, rgba(15,14,12,0.85) 100%);
+}
+.mdt-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  text-align: center;
+  padding: 0 24px;
+}
+.mdt-hero-title {
+  font-size: 58px;
+  line-height: 1.1;
+  color: var(--mdt-text, #f2ede4);
+  font-weight: 500;
+  margin: 18px 0 22px;
+}
+.mdt-hero-title em {
+  font-style: italic;
+  color: var(--mdt-gold, #cba15a);
+}
+.mdt-hero-subtitle {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--mdt-text-muted, #a89f92);
+  max-width: 520px;
+  margin: 0 auto 36px;
+}
+.mdt-hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .mdt-hero-title { font-size: 38px; }
+  .mdt-hero { min-height: 78vh; }
+}
+
+/* ---------- NOVEDADES ---------- */
+.mdt-featured {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 90px 32px 60px;
+}
+.mdt-featured-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid var(--mdt-border, rgba(212,184,138,0.16));
+  padding-bottom: 24px;
+}
+.mdt-featured-header h2 {
+  font-size: 34px;
+  color: var(--mdt-text, #f2ede4);
+  font-weight: 500;
+  margin: 8px 0 0;
+}
+.mdt-featured-link {
+  color: var(--mdt-gold, #cba15a);
+  text-decoration: none;
+  font-size: 12.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mdt-featured-link:hover { color: var(--mdt-gold-soft, #e4c98d); }
+
+.mdt-featured-loading {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--mdt-text-muted, #a89f92);
+  font-size: 14px;
+}
+
+.mdt-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+@media (max-width: 1024px) {
+  .mdt-featured-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 720px) {
+  .mdt-featured-grid { grid-template-columns: repeat(2, 1fr); }
+  .mdt-featured { padding: 60px 20px 40px; }
+}
+
+/* ---------- FRANJA EDITORIAL ---------- */
+.mdt-strip {
+  border-top: 1px solid var(--mdt-border, rgba(212,184,138,0.16));
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 60px 32px 100px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+.mdt-strip-item span {
+  display: block;
+  color: var(--mdt-gold, #cba15a);
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+.mdt-strip-item p {
+  color: var(--mdt-text-muted, #a89f92);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+}
+@media (max-width: 720px) {
+  .mdt-strip { grid-template-columns: 1fr; padding: 50px 20px 70px; gap: 30px; }
+}

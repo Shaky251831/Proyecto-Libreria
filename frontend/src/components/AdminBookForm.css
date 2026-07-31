@@ -1,0 +1,103 @@
+.mdt-book-form-card {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  background: var(--mdt-bg-elevated-2, #1d1a17);
+  border: 1px solid var(--mdt-border, rgba(212,184,138,0.16));
+  border-radius: 2px;
+  padding: 40px 40px 32px;
+  box-shadow: var(--mdt-shadow, 0 20px 60px rgba(0,0,0,0.45));
+  font-family: var(--mdt-sans, 'Inter', sans-serif);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.mdt-book-form-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 30px;
+}
+
+.mdt-book-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mdt-book-form-row {
+  display: flex;
+  gap: 14px;
+}
+.mdt-book-form-row .mdt-field { flex: 1; }
+
+.mdt-book-form-fields select,
+.mdt-book-form-fields textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--mdt-border-strong, rgba(212,184,138,0.32));
+  color: var(--mdt-text, #f2ede4);
+  font-size: 14px;
+  font-family: var(--mdt-sans, 'Inter', sans-serif);
+  padding: 8px 2px;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.mdt-book-form-fields select option { background: #1d1a17; }
+.mdt-book-form-fields select:focus,
+.mdt-book-form-fields textarea:focus { border-bottom-color: var(--mdt-gold, #cba15a); }
+
+.mdt-book-form-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.mdt-book-form-preview-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mdt-text-faint, #756c60);
+  align-self: flex-start;
+}
+.mdt-book-form-preview-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border: 1px dashed var(--mdt-border-strong, rgba(212,184,138,0.32));
+  border-radius: 4px;
+  overflow: hidden;
+  background: #14120f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mdt-book-form-preview-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mdt-book-form-preview-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--mdt-text-faint, #756c60);
+  font-size: 11px;
+}
+
+.mdt-book-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--mdt-border, rgba(212,184,138,0.16));
+  padding-top: 22px;
+}
+
+@media (max-width: 620px) {
+  .mdt-book-form-card { padding: 30px 22px 26px; }
+  .mdt-book-form-grid { grid-template-columns: 1fr; }
+  .mdt-book-form-preview-cover { max-width: 200px; margin: 0 auto; }
+}

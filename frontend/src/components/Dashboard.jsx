@@ -1,48 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import './Auth.css';
+import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
+import api from '../api/axios';
+import AdminBookForm from './AdminBookForm';
+import './Dashboard.css';
 
 export default function Dashboard({ puedeEliminar = true }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // Agregar libro
-  const [mostrarModal, setMostrarModal] = useState(false);
-  const [nuevoLibro, setNuevoLibro] = useState({
-    title: '',
-    author: '',
-    price: '',
-    stock: '',
-    categoria_id: '',
-    descripcion: '',
-  });
+  const [formOpen, setFormOpen] = useState(false);
+  const [libroEditando, setLibroEditando] = useState(null);
 
-  // Lista de libros conectada al backend
   const [books, setBooks] = useState([]);
-  // Lista de categorías (necesarias para el formulario de nuevo libro)
   const [categorias, setCategorias] = useState([]);
 
-  const token = localStorage.getItem('token');
-
-  // Cargar libros y categorías desde Laravel.
-  useEffect(() => {
-    fetchBooks();
-    fetchCategorias();
-  }, []);
-
   const fetchBooks = async () => {
+    setLoading(true);
     try {
-      const response = await fetch('https://mundosdetinta.duckdns.org/api/libros', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
-        }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        // Betsa poner el API 
-        setBooks(Array.isArray(data) ? data : data.data || []);
-      }
+      const response = await api.get('/libros');
+      const data = response.data;
+      setBooks(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
       console.error('Error al cargar libros:', error);
     } finally {
@@ -52,86 +30,66 @@ export default function Dashboard({ puedeEliminar = true }) {
 
   const fetchCategorias = async () => {
     try {
-      const response = await fetch('https://mundosdetinta.duckdns.org/api/categorias', {
-        headers: { 'Accept': 'application/json' }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setCategorias(Array.isArray(data) ? data : data.data || []);
-      }
+      const response = await api.get('/categorias');
+      const data = response.data;
+      setCategorias(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
       console.error('Error al cargar categorías:', error);
     }
   };
 
-  // Para eliminar un registro conectado al backend
+  useEffect(() => {
+    fetchBooks();
+    fetchCategorias();
+  }, []);
+
   const handleDelete = async (id) => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar este libro?')) return;
-
     try {
-      const response = await fetch(`https://mundosdetinta.duckdns.org/api/libros/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        setBooks(books.filter(book => book.id !== id));
-        alert(`Libro con ID ${id} eliminado exitosamente.`);
-      } else {
-        alert('No se pudo eliminar el libro.');
-      }
+      await api.delete(`/libros/${id}`);
+      setBooks((prev) => prev.filter((book) => book.id !== id));
     } catch (error) {
       console.error('Error al eliminar:', error);
+      alert('No se pudo eliminar el libro.');
     }
   };
 
-  // Guardar el nuevo libro conectado al backend
-  const handleAgregarLibro = async (e) => {
-    e.preventDefault();
-    if (!nuevoLibro.title || !nuevoLibro.author || !nuevoLibro.price || !nuevoLibro.stock || !nuevoLibro.categoria_id) {
-      alert('Completa todos los campos obligatorios: título, autor, precio, stock y categoría.');
-      return;
-    }
-
-    try {
-      const response = await fetch('https://mundosdetinta.duckdns.org/api/libros', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          titulo: nuevoLibro.title,
-          autor: nuevoLibro.author,
-          precio: nuevoLibro.price,
-          stock: nuevoLibro.stock,
-          categoria_id: nuevoLibro.categoria_id,
-          descripcion: nuevoLibro.descripcion || null,
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        fetchBooks();
-        setNuevoLibro({ title: '', author: '', price: '', stock: '', categoria_id: '', descripcion: '' });
-        setMostrarModal(false); // Cerrar formulario
-        alert('Libro registrado exitosamente.');
-      } else {
-        alert('Error al registrar el libro: ' + (data.message || 'Verifica los datos'));
-      }
-    } catch (error) {
-      console.error('Error al guardar:', error);
-    }
+  const openNuevoLibro = () => {
+    setLibroEditando(null);
+    setFormOpen(true);
   };
 
-  const filteredBooks = books.filter(book => {
-    const title = book.title || book.titulo || '';
-    const author = book.author || book.autor || '';
+  const openEditarLibro = (libro) => {
+    setLibroEditando(libro);
+    setFormOpen(true);
+  };
+
+  // Se pasa como onSubmit a AdminBookForm; crea o edita según haya libroEditando
+  const handleGuardarLibro = async (form) => {
+    const payload = {
+      titulo: form.titulo,
+      autor: form.autor,
+      precio: form.precio,
+      stock: form.stock,
+      categoria_id: form.categoria_id,
+      img_portada: form.img_portada || null,
+      descripcion: form.descripcion || null,
+    };
+
+    if (libroEditando) {
+      await api.put(`/libros/${libroEditando.id}`, payload);
+    } else {
+      await api.post('/libros', payload);
+    }
+
+    await fetchBooks();
+    setFormOpen(false);
+    setLibroEditando(null);
+  };
+
+  const filteredBooks = books.filter((book) => {
+    const title = book.titulo || '';
+    const author = book.autor || '';
     return (
       title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       author.toLowerCase().includes(searchTerm.toLowerCase())
@@ -139,193 +97,88 @@ export default function Dashboard({ puedeEliminar = true }) {
   });
 
   return (
-    <div style={{ padding: '30px', maxWidth: '1000px', margin: '0 auto' }}>
-      <h2>{puedeEliminar ? 'Panel de Administración' : 'Panel de Empleado'} - Gestión de Inventario</h2>
-      <p style={{ color: '#666' }}>Panel de control de Mundos de Tinta.</p>
+    <div className="mdt-page mdt-dashboard">
+      <div className="mdt-dashboard-header">
+        <div>
+          <span className="mdt-eyebrow">{puedeEliminar ? 'Panel de administración' : 'Panel de empleado'}</span>
+          <h2 className="mdt-serif">Gestión de inventario</h2>
+        </div>
+        <button className="mdt-btn mdt-btn-primary" onClick={openNuevoLibro}>
+          <Plus size={15} /> Añadir libro
+        </button>
+      </div>
 
-      {/* --- Barra de búsqueda y botón de agregar --- */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', marginBottom: '20px' }}>
-        <input 
-          type="text" 
-          placeholder="Buscar por título o autor..." 
+      <div className="mdt-dashboard-search">
+        <Search size={16} strokeWidth={1.5} />
+        <input
+          type="text"
+          placeholder="Buscar por título o autor…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: '8px 12px',
-            width: '300px',
-            borderRadius: '6px',
-            border: '1px solid #ccc'
-          }}
         />
-        <button 
-          style={{ background: '#3a6347', color: 'white', border: 'none', padding: '10px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-          onClick={() => setMostrarModal(true)}
-        >
-          + Agregar Nuevo Libro
-        </button>
       </div>
 
-      {/* --- Para agregar libro--- */}
-      {mostrarModal && (
-        <div style={{ background: '#f9f9f9', padding: '20px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ddd', maxWidth: '500px' }}>
-          <h3 style={{ marginTop: 0, color: '#2C3E50' }}>Registrar Nuevo Libro</h3>
-          <form onSubmit={handleAgregarLibro}>
-            <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Título</label>
-              <input 
-                type="text" 
-                value={nuevoLibro.title}
-                onChange={(e) => setNuevoLibro({ ...nuevoLibro, title: e.target.value })}
-                required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Autor</label>
-              <input 
-                type="text" 
-                value={nuevoLibro.author}
-                onChange={(e) => setNuevoLibro({ ...nuevoLibro, author: e.target.value })}
-                required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Categoría</label>
-              <select
-                value={nuevoLibro.categoria_id}
-                onChange={(e) => setNuevoLibro({ ...nuevoLibro, categoria_id: e.target.value })}
-                required
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-              >
-                <option value="">Selecciona una categoría...</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Precio (MXN)</label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  value={nuevoLibro.price}
-                  onChange={(e) => setNuevoLibro({ ...nuevoLibro, price: e.target.value })}
-                  required
-                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Stock</label>
-                <input 
-                  type="number" 
-                  value={nuevoLibro.stock}
-                  onChange={(e) => setNuevoLibro({ ...nuevoLibro, stock: e.target.value })}
-                  required
-                  style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '5px' }}>Descripción (opcional)</label>
-              <textarea
-                value={nuevoLibro.descripcion}
-                onChange={(e) => setNuevoLibro({ ...nuevoLibro, descripcion: e.target.value })}
-                rows={2}
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical' }}
-              />
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button type="submit" style={{ background: '#3a6347', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                Guardar Libro
-              </button>
-              <button type="button" onClick={() => setMostrarModal(false)} style={{ background: '#d9534f', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer' }}>
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* --- Tabla inventario--- */}
-      <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
-        <thead>
-          <tr style={{ background: '#f5f5f5', textAlign: 'left', borderBottom: '2px solid #ddd' }}>
-            <th style={{ padding: '12px' }}>ID</th>
-            <th style={{ padding: '12px' }}>Título</th>
-            <th style={{ padding: '12px' }}>Autor</th>
-            <th style={{ padding: '12px' }}>Precio</th>
-            <th style={{ padding: '12px', textAlign: 'center' }}>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
+      <div className="mdt-dashboard-table-wrap">
+        <table className="mdt-dashboard-table">
+          <thead>
             <tr>
-              <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#777' }}>
-                Cargando inventario...
-              </td>
+              <th>Portada</th>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th className="mdt-col-actions">Acciones</th>
             </tr>
-          ) : filteredBooks.length > 0 ? (
-            filteredBooks.map(book => (
-              <tr key={book.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: '12px' }}>{book.id}</td>
-                <td style={{ padding: '12px' }}>{book.title || book.titulo}</td>
-                <td style={{ padding: '12px' }}>{book.author || book.autor}</td>
-                <td style={{ padding: '12px' }}>${book.price || book.precio} MXN</td>
-                <td style={{ padding: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                  <button 
-                    style={{ background: '#f0ad4e', color: 'white', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer' }}
-                    onClick={() => alert(`Editar libro: ${book.title || book.titulo}`)}
-                  >
-                    Editar
-                  </button>
-                  {puedeEliminar && (
-                    <button 
-                      style={{ background: '#d9534f', color: 'white', border: 'none', padding: '6px 10px', borderRadius: '4px', cursor: 'pointer' }}
-                      onClick={() => handleDelete(book.id)}
-                    >
-                      Eliminar
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan="6" className="mdt-dashboard-empty">Cargando inventario…</td></tr>
+            ) : filteredBooks.length > 0 ? (
+              filteredBooks.map((book) => (
+                <tr key={book.id}>
+                  <td>
+                    <div className="mdt-dashboard-thumb">
+                      {book.img_portada ? <img src={book.img_portada} alt={book.titulo} /> : <span>—</span>}
+                    </div>
+                  </td>
+                  <td>{book.titulo}</td>
+                  <td>{book.autor}</td>
+                  <td>${book.precio} MXN</td>
+                  <td>{book.stock}</td>
+                  <td className="mdt-col-actions">
+                    <button className="mdt-icon-action" onClick={() => openEditarLibro(book)} aria-label="Editar">
+                      <Pencil size={15} />
                     </button>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#777' }}>
-                No se encontraron libros coincidentes.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                    {puedeEliminar && (
+                      <button className="mdt-icon-action mdt-icon-danger" onClick={() => handleDelete(book.id)} aria-label="Eliminar">
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr><td colSpan="6" className="mdt-dashboard-empty">No se encontraron libros coincidentes.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {/* --- Paginación--- */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '20px', alignItems: 'center' }}>
-        <button 
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          style={{ padding: '6px 14px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #ccc', background: '#fff' }}
-        >
+      <div className="mdt-pagination">
+        <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
           Anterior
         </button>
-        
-        <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Página {currentPage}</span>
-
-        <button 
-          onClick={() => setCurrentPage(prev => prev + 1)}
-          style={{ padding: '6px 14px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #ccc', background: '#fff' }}
-        >
-          Siguiente
-        </button>
+        <span>Página {currentPage}</span>
+        <button onClick={() => setCurrentPage((prev) => prev + 1)}>Siguiente</button>
       </div>
 
+      <AdminBookForm
+        open={formOpen}
+        onClose={() => { setFormOpen(false); setLibroEditando(null); }}
+        onSubmit={handleGuardarLibro}
+        categorias={categorias}
+        libroInicial={libroEditando}
+      />
     </div>
   );
 }

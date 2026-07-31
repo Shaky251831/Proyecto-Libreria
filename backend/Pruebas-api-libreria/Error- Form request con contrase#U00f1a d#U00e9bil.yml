@@ -1,0 +1,24 @@
+info:
+  name: "Error: Form request con contraseña débil"
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/register
+  body:
+    type: json
+    data: |-
+      {
+        "nombre": "Prueba Error",
+        "email": "error@libreria.com",
+        "password": "123",
+        "password_confirmation": "123"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,155 @@
+/* ==========================================================================
+   MUNDOS DE TINTA — Tema visual premium
+   Estética: librería de lujo. Fondos oscuros, acentos arena/dorado,
+   tipografía serif editorial para títulos + sans-serif para texto.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Superficies */
+  --mdt-bg: #0f0e0c;            /* negro cálido, no puro */
+  --mdt-bg-elevated: #161412;   /* tarjetas / navbar */
+  --mdt-bg-elevated-2: #1d1a17; /* modales / drawers */
+  --mdt-border: rgba(212, 184, 138, 0.16);
+  --mdt-border-strong: rgba(212, 184, 138, 0.32);
+
+  /* Acentos arena / dorado suave */
+  --mdt-gold: #cba15a;
+  --mdt-gold-soft: #e4c98d;
+  --mdt-gold-dim: rgba(203, 161, 90, 0.14);
+  --mdt-sand: #d9c9ad;
+
+  /* Texto */
+  --mdt-text: #f2ede4;
+  --mdt-text-muted: #a89f92;
+  --mdt-text-faint: #756c60;
+
+  /* Estados */
+  --mdt-danger: #c1613f;
+  --mdt-success: #7a9270;
+
+  /* Tipografía */
+  --mdt-serif: 'Cormorant Garamond', 'Georgia', serif;
+  --mdt-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --mdt-radius-sm: 4px;
+  --mdt-radius: 10px;
+  --mdt-radius-lg: 18px;
+  --mdt-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --mdt-transition: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reinicia las limitaciones del template por defecto de Vite */
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-inline: none;
+  min-height: 100svh;
+  display: block;
+  text-align: left;
+  background: var(--mdt-bg);
+}
+
+body {
+  background: var(--mdt-bg);
+  color: var(--mdt-text);
+  font-family: var(--mdt-sans);
+}
+
+.mdt-page {
+  min-height: calc(100vh - 76px);
+  background: var(--mdt-bg);
+  color: var(--mdt-text);
+  font-family: var(--mdt-sans);
+}
+
+.mdt-serif {
+  font-family: var(--mdt-serif);
+}
+
+.mdt-eyebrow {
+  font-family: var(--mdt-sans);
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--mdt-gold);
+  font-weight: 500;
+}
+
+.mdt-btn {
+  font-family: var(--mdt-sans);
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 14px 30px;
+  border-radius: var(--mdt-radius-sm);
+  cursor: pointer;
+  transition: all var(--mdt-transition);
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mdt-btn-primary {
+  background: var(--mdt-gold);
+  color: #14120f;
+}
+.mdt-btn-primary:hover {
+  background: var(--mdt-gold-soft);
+  transform: translateY(-1px);
+}
+.mdt-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.mdt-btn-outline {
+  background: transparent;
+  color: var(--mdt-sand);
+  border-color: var(--mdt-border-strong);
+}
+.mdt-btn-outline:hover {
+  border-color: var(--mdt-gold);
+  color: var(--mdt-gold-soft);
+}
+
+/* Paginación compartida (Catálogo, Dashboard, etc.) */
+.mdt-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+.mdt-pagination button {
+  background: transparent;
+  border: 1px solid var(--mdt-border-strong);
+  color: var(--mdt-text);
+  padding: 9px 20px;
+  border-radius: 20px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.mdt-pagination button:hover:not(:disabled) {
+  border-color: var(--mdt-gold);
+  color: var(--mdt-gold);
+}
+.mdt-pagination button:disabled { opacity: 0.35; cursor: not-allowed; }
+.mdt-pagination span { font-size: 12.5px; color: var(--mdt-text-muted); }
+
+.mdt-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.mdt-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--mdt-border-strong);
+  border-radius: 10px;
+}

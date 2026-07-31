@@ -1,0 +1,126 @@
+@import './BookCard.css';
+
+.mdt-catalogo {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 56px 32px 100px;
+}
+
+.mdt-catalogo-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--mdt-text-muted, #a89f92);
+  font-size: 14px;
+}
+.mdt-catalogo-error { color: #e2a184; }
+
+.mdt-catalogo-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 44px;
+}
+.mdt-catalogo-header h2 {
+  font-size: 36px;
+  color: var(--mdt-text, #f2ede4);
+  font-weight: 500;
+  margin: 8px 0 12px;
+}
+.mdt-catalogo-header p {
+  color: var(--mdt-text-muted, #a89f92);
+  font-size: 14.5px;
+  margin: 0;
+}
+
+/* ---------- Toolbar ---------- */
+.mdt-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--mdt-border, rgba(212,184,138,0.16));
+  border-bottom: 1px solid var(--mdt-border, rgba(212,184,138,0.16));
+  padding: 20px 0;
+  margin-bottom: 10px;
+}
+
+.mdt-toolbar-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 260px;
+  max-width: 360px;
+  color: var(--mdt-text-muted, #a89f92);
+  border-bottom: 1px solid var(--mdt-border-strong, rgba(212,184,138,0.32));
+  padding-bottom: 6px;
+}
+.mdt-toolbar-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--mdt-text, #f2ede4);
+  font-size: 14px;
+  font-family: var(--mdt-sans, 'Inter', sans-serif);
+}
+.mdt-toolbar-search input::placeholder { color: var(--mdt-text-faint, #756c60); }
+
+.mdt-toolbar-filters {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.mdt-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mdt-text-muted, #a89f92);
+}
+.mdt-select-wrap select {
+  background: var(--mdt-bg-elevated, #161412);
+  border: 1px solid var(--mdt-border-strong, rgba(212,184,138,0.32));
+  color: var(--mdt-text, #f2ede4);
+  font-size: 12.5px;
+  letter-spacing: 0.4px;
+  padding: 9px 14px;
+  border-radius: 20px;
+  outline: none;
+  cursor: pointer;
+  font-family: var(--mdt-sans, 'Inter', sans-serif);
+}
+.mdt-select-wrap select:focus { border-color: var(--mdt-gold, #cba15a); }
+
+.mdt-catalogo-count {
+  color: var(--mdt-text-faint, #756c60);
+  font-size: 12px;
+  margin: 18px 2px 30px;
+}
+
+/* ---------- Grid (reutiliza .mdt-book-card de Home.css) ---------- */
+.mdt-catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px 26px;
+}
+.mdt-catalogo-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--mdt-text-muted, #a89f92);
+  padding: 60px 0;
+  font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+  .mdt-catalogo-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 720px) {
+  .mdt-catalogo { padding: 40px 20px 70px; }
+  .mdt-catalogo-grid { grid-template-columns: repeat(2, 1fr); }
+  .mdt-toolbar { flex-direction: column; align-items: stretch; }
+  .mdt-toolbar-search { max-width: none; }
+}
+
+/* La paginación (.mdt-pagination) vive en theme.css para reutilizarse en Dashboard */

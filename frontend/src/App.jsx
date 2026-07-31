@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
+import SideCart from './components/SideCart';
+import LoginModal from './components/LoginModal';
 import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
 import Catalogo from './components/Catalogo';
-import Carrito from './components/Carrito';
 import Dashboard from './components/Dashboard';
 import Historial from './components/Historial';
 import ConfirmarPedido from './components/ConfirmarPedido';
@@ -17,18 +18,12 @@ import DetalleLibro from './components/DetalleLibro';
 import CategoriasAdmin from './components/CategoriasAdmin';
 import AdminPrestamos from './components/AdminPrestamos';
 import MisPrestamos from './components/MisPrestamos';
+import { CartProvider } from './context/CartContext';
+import { UIProvider } from './context/UIContext';
 
 function MainContent({ user, setUser }) {
-  const location = useLocation();
-  const navigate = useNavigate(); // <-- Ya está declarado aquí
-  
-  const hideNavbar =
-    location.pathname === '/' ||
-    location.pathname === '/login' ||
-    location.pathname === '/register' ||
-    location.pathname === '/forgot-password' ||
-    location.pathname === '/reset-password';
-  
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -38,7 +33,14 @@ function MainContent({ user, setUser }) {
 
   return (
     <>
-      {!hideNavbar && <Navbar user={user} onLogout={handleLogout} />}
+      {/*
+        FIX: el Navbar ahora se muestra en TODAS las rutas, incluida "/".
+        Antes "hideNavbar" ocultaba la barra en Inicio, lo que rompía la
+        navegación de vuelta al catálogo/login desde la portada. La ruta "/"
+        siempre renderiza <Home /> sin ningún tipo de guardia de autenticación,
+        por lo que hacer clic en "Inicio" ya no puede terminar en /login.
+      */}
+      <Navbar user={user} onLogout={handleLogout} />
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -46,19 +48,18 @@ function MainContent({ user, setUser }) {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/catalogo" element={<Catalogo />} />               
+        <Route path="/catalogo" element={<Catalogo user={user} />} />
         <Route path="/libro/:id" element={<DetalleLibro />} />
-        <Route path="/carrito" element={<Carrito />} />
         <Route path="/perfil" element={<Profile user={user} setUser={setUser} />} />
         <Route path="/historial" element={<Historial />} />
         <Route path="/confirmar-pedido" element={<ConfirmarPedido />} />
-        <Route 
-          path="/admin/dashboard" 
+        <Route
+          path="/admin/dashboard"
           element={
-            <ProtectedRoute allowedRoles={[1,'admin']} userRole={user?.rol_id || user?.role}>
-              <Dashboard/>
+            <ProtectedRoute allowedRoles={[1, 'admin']} userRole={user?.rol_id || user?.role}>
+              <Dashboard />
             </ProtectedRoute>
-          } 
+          }
         />
         <Route
           path="/admin/categorias"
@@ -76,7 +77,6 @@ function MainContent({ user, setUser }) {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/empleado/panel"
           element={
@@ -95,6 +95,11 @@ function MainContent({ user, setUser }) {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* Montados a nivel global: el drawer del carrito y el modal de login/registro
+          pueden abrirse desde cualquier componente vía sus contexts. */}
+      <SideCart />
+      <LoginModal setUser={setUser} />
     </>
   );
 }
@@ -107,7 +112,11 @@ export default function App() {
 
   return (
     <Router>
-      <MainContent user={user} setUser={setUser} />
+      <CartProvider>
+        <UIProvider>
+          <MainContent user={user} setUser={setUser} />
+        </UIProvider>
+      </CartProvider>
     </Router>
   );
 }
