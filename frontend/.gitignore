@@ -1,0 +1,11 @@
+# Dependencias
+node_modules/
+
+# Compilados de producción
+dist/
+dist-ssr/
+
+# Variables de entorno locales
+.local
+.env
+.env.*

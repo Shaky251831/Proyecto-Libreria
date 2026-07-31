@@ -7,47 +7,47 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependencias y compilados
+node_modules/
+/node_modules
+dist/
+dist-ssr/
+/public/build
+/vendor/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-<<<<<<< HEAD:backend/.gitignore
+# Entornos y variables
 .env
 .env.backup
 .env.production
-.phpactor.json
+*.local
+
+# Laravel y almacenamiento
 .phpunit.result.cache
-/.codex
-/.cursor/
-/.idea
-/.nova
 /.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
-/public/build
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+/auth.json
 _ide_helper.php
 Homestead.json
 Homestead.yaml
+
+# Editores y Sistema Operativo
+.vscode/*
+!.vscode/extensions.json
+.idea
+/.idea
+.DS_Store
 Thumbs.db
-=======
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-frontend/
->>>>>>> 8cd7a4559c3dea1808690fd7339a5b3d79431aee:.gitignore
+/.codex
+/.cursor/
+/.nova
+/.zed
+.phpactor.json
