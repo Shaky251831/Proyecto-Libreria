@@ -34,7 +34,6 @@ export default function Home() {
         <div className="mdt-hero-content">
           <span className="mdt-eyebrow">Librería Online · Est. Oaxaca</span>
           <h1 className="mdt-serif mdt-hero-title">
-            Historias que <em>permanecen</em>,<br /> páginas que definen
           </h1>
           <p className="mdt-hero-subtitle">
             Una selección curada de literatura para lectores exigentes.
